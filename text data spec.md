@@ -1,5 +1,5 @@
 # Text File Specifications
-Covers the contents of the newspapers in DATA_USA and other ingame text in TEXT_USA (though it should work for other localizations, only tested with the USA version).
+Covers the contents of the newspapers in DATA_USA and [other ingame text](#other-ingame-text) in TEXT_USA (though it should work for other localizations, only tested with the USA version).
 ## Newspapers
 DATA_USA.DAT has the raw newspaper text, and some metadata on how to build stories.
 DATA_USA.IDX has an index for reading the various parts of the newspaper data file.
@@ -111,6 +111,8 @@ Note that values in square braces are not something to decompress, but a pointer
 **Escape Value Table:**\
 Pointer is a friendly name for the thing being pointed to that was created for the purposes of this documentation.
 
+_Note:_ There is likely some index in one of the other parts of the data file for how to build these, but it has not been deciphered yet.
+
 |Value|Pointer|Value|Pointer|Value|Pointer|Value|Pointer|
 |---|---|---|---|---|---|---|---|
 | 0x4B | foundingreaction | 0x77 | utterance | 0x95 | action1 | 0xB3 | illness |
@@ -148,5 +150,12 @@ Pointer is a friendly name for the thing being pointed to that was created for t
 
 To be determined.
 
+## Other Ingame Text
+
+Stored in TEXT_USA.DAT with an index in TEXT_USA.IDX
+
+Format is relatively straightforward:\
+The index file contains an ID for the text (likely to identify it through some in-game mechanism) and a length of the ASCII text block.\
+Parsing the data file just involves splitting it up into chunks with the given lengths and converting the RAW bytes to ASCII characters. Note that there seems to be some characters outside the ASCII range, ignoring them doesn't seem to cause any ill effects in parsing.
 
 
