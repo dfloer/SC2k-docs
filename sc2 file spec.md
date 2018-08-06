@@ -29,15 +29,18 @@ Complete sections:
 - XPOP
 - XROG
 - XGRP
+- TEXT
 
 Mostly complete sections:
 - MISC
 - XTXT
 - XLAB
 - XMIC
+- SCEN
 
 Sections that need more work:
 - XTHG
+- PICT
 
 ## Chunks:
 
@@ -56,16 +59,22 @@ Rest of the file has a 4B chunk id (which is 4 ASCII characters between 0x20 and
 - [XLAB](#xlab): 6400
 - [XMIC](#xmic): 1200
 - [XTHG](#xthg): 480
-- XBIT: 16384
-- XTRF: 4096
-- XPLT: 4096
-- XVAL: 4096
-- XCRM: 4096
-- XPLC: 1024
-- XFIR: 1024
-- XPOP: 1024
-- XROG: 1024
-- XGRP: 3328
+- [XBIT](#xbit): 16384
+- [XTRF](#xtrf): 4096
+- [XPLT](#xplt): 4096
+- [XVAL](#xval): 4096
+- [XCRM](#xcrm): 4096
+- [XPLC](#xplc): 1024
+- [XFIR](#xfir): 1024
+- [XPOP](#xpop): 1024
+- [XROG](#xrog): 1024
+- [XGRP](#xgrp): 3328
+
+#### Chunks only in Scenario Files
+
+- [TEXT](#text)
+- [SCEN](#scen)
+- [PICT](#pict)
 
 ## Compression:
 
@@ -791,4 +800,215 @@ Probably the first 10 are for the built in microsims, and the next 140 for the r
 	For a mayor’s mansion: F3 28 08 4A 00 5E 00 00
 	F3 = mansion, 28 = 4th stat, 08 4A = 2nd stat, 00=(maybe third stat), 5e = first stat, 00 00 could be padding or employees.
 	Llama Dome example: FF 8B 07 C1 01 07 00 80
-	8B=first stat, 07C1=2nd, 0107=3rd, 00=?, 80=4th, but 5th in game (# of weddings) is 139 (0x8B) 
+	8B=first stat, 07C1=2nd, 0107=3rd, 00=?, 80=4th, but 5th in game (# of weddings) is 139 (0x8B)
+	
+
+
+## XTHG
+
+_Note:_ This section is mostly incomplete and is presently more structured as notes.
+
+00..01: Changes when going from terrain to city mode.
+
+0x0000->0x0402 bit flags? 000000000000->0000010000000010
+
+Doesn’t actually seem to affect the simulation if it’s blanked. However, planes/helicopters seemed to disappear when blanked. Maybe this is a flight path for planes or something?
+
+Last byte was 0x00 in 1114 cities looked at.
+
+Made up of 40x12B chunks.
+
+First chunk appears to be a header
+
+39x other chunks after (39 pointers in XTXT)
+
+Basic structure for a chunk seems to be:
+
+|Offset|Usage|
+|---|---|
+| 00 | int representing the id of the tile |
+| 01 | unknown data, rotation?|	
+| 02 | unknown data, rotation? (for id=9, this seems to turn the boat into nessie)|
+| 03 | tile x coordinate |
+| 04 | tile y coordinate |
+| 05 | unknown |
+| 06 | unknown |
+| 07 | unknown |
+| 08 | unknown |
+| 09 | unknown |
+| 0A | unknown |
+| 0B | unknown |
+
+**Observed tile ids:**\
+0x1: Airplane\
+0x2: Helicopter\
+0x3: Ship\
+0x4: Unknown\
+0x5: monster\
+0x6: Unknown\
+0x7: Police Deploy\
+0x8: Fire Deploy\
+0x9: Sailboat\
+0xA: Train (seems to be front of the train)\
+0xB: Train (seems to be for the other two train cars.)\
+0xC: Unknown\
+0xD: Unknown\
+0xE: Military Deploy\
+0xF: tornado
+
+## XBIT
+
+1B per tile, storing 8 single bit flags.
+
+|Bit Position | Flag Meaning|
+|---|---|
+| 0 | Powerable (Does this tile recieve power).|
+| 1 | Powered (Is this tile receiving power).|
+| 2 | Piped (Can this tile receive water).|
+| 3 | Watered (Is this tile receiving water).|
+| 4 | XVAL mask. |
+| 5 | Water (is this tile covered in water).|
+| 6 | Rotate the tile by 90 degrees.|
+| 7 | Salt Water (Will water on this tile be fresh or salt water).|
+
+_Bit #4 Notes:_  This bit is set for a mask for xval. 64x64 and needs scaling. Doesn’t appear in all cities. Ignoring it does not seem to cause issues as value 0x00 in xval is already transparent. Maybe only old/DOS created cities.\
+_Rotation Notes:_ For example, LR pier becomes TB peir with this set, LR runway becomes TB with this set, LR onramps become TB onramps with this set, bridge pieces as well.
+
+## 64x64  Minimaps
+
+Total # is 4096 = 64x64.
+
+Show in city appears to split into 2x2 blocks, for a total of 4096 blocks.\
+Going with 16 colours from white to black makes bitmaps that are very similar to the in game minimap.
+
+### XTRF
+
+Traffic data. This is why the game shows traffic in 2x2 blocks, even for roads that are only 1x1 tiles in size.
+
+### XPLT
+
+Pollution
+
+### XVAL
+
+Land Value, simulation shows these values using human friendly 1 indexed.
+
+### XCRM
+
+Crime
+
+## 32x32 Minimaps
+Total # is 1024 = 32x32. Show in city appears to split into 4x4 blocks, for a total of 1024 blocks.\
+Minimap window seems to bin these in 16 even blocks.
+
+### XPLC
+
+Police coverage
+
+## #XFIR
+
+Fire coverage.
+
+### XPOP
+
+Population density.
+
+### XROG
+
+Rate of Growth graph information.
+
+7F: no change (7F seems to be the default for a new city what hasn’t been run yet).|
+>82: + change (Green)|
+<7D: - change (Red)
+
+_Note:_ Numbers chosen after experimentation, numbers in the very middle could affect the simulation, no 00 or FF noted.
+
+### XGRP
+
+Historical graph data for the graph window.\
+16 different tracked stats, shows 1, 10 and 100 years. Appears to update every month, every 1/2 year and every 5 years.\
+16*(20+20+12)=832*4B=3328B
+
+**Contents:**\
+Each section contains 52*4B integers containing historical data for the graph.\
+12 for 1 year, 20 for 10 years, 20 for 100 years. (1/month, 1/6months, 1/5years)
+
+From beginning:
+
+|Offset|Graph|
+|---|---|
+|0000 .. 00CF | City Size|
+|00D0 .. 019F | Residents|
+|01A0 .. 026F | Commerce|
+|0270 .. 033F | Industry|
+|0340 .. 040F | Traffic.|
+|0410 .. 04DF | Pollution.|
+|04E0 .. 05AF | Value|
+|05B0 .. 067F | Crime|
+|0680 .. 074F | Power %|
+|0750 .. 081F | Water %|
+|0820 .. 08EF | Health|
+|08F0 .. 09BF | Education|
+|09C0 .. 0A8F | Unemployment|
+|0A90 .. 0B5F | GNF (GNP?), in 1000s.|
+|0B60 .. 0C2F | Nat’n Pop., in 1000s|
+|0C30 .. 0CFF | Fed Rate|
+
+# Additional Fields for Scenario Files
+
+### TEXT
+
+Textual description of the scenario. Max lengths are unknown.
+
+Observed to have two entries. One for the description on the scenario screen, and one for the in game, extended description.\
+First 4 bytes are the type, 0x80 00 00 00 for the scenario screen description, 0x81 00 00 00 for the extended description
+
+### SCEN
+Scenario win conditions.
+
+First 4 bytes always appear to be 0x80 00 00 00.
+
+Order still needs to be confirmed on some of these (marked with *).
+
+Disaster Type: 2 bytes\
+Type of disaster, as defined in the MISC section.
+
+Disaster X Location: 1 byte
+
+Disaster Y Location: 1 byte
+
+Time Limit (Months): 2 bytes
+
+City Size Goal: 4 bytes\
+Seems to be comparing against the normal city population without arcos from MISC.
+
+Residential Goal: 4 bytes
+
+Commercial Goal: 4 bytes
+
+Industrial Goal: 4 bytes
+
+Cash Goal Funds wihtout: 4 bytes\
+Seems to be total cash on hand, not counting debts from bonds.
+
+*Land Value Goal: 4 bytes
+
+*Pollution Limit: 4 bytes
+
+*Crime Limit: 4 bytes
+
+*Traffic Limit: 4 bytes
+
+*Build Item One: 1 byte
+
+*Build Item Two: 1 byte
+
+*Item One Tiles: 2 bytes
+
+*Item Two Tiles: 2 bytes
+
+Sometimes there’s an extra 4 bytes of 0s at the end.
+
+## PICT
+
+	Image for the scenario.
