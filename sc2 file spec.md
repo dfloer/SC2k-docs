@@ -11,36 +11,16 @@ It starts with a 12B (byte) header which contains:
 ## Other file notes
 For anything on a grid in the save (most segments), the grid goes from top corner (default rotation) to bottom, row by row right to left.
 
-This is an unofficial specification, and is therefore incomplete. However, large sections are complete. This specification also only applies to the .sc2 file format, and not how the game interprets the given values.\
-Complete sections:
-- CNAM
-- XTER
-- XBLD
-- XZON
-- XUND
-- XBIT
-- XBIT
-- XTRF
-- XPLT
-- XVAL
-- XCRM
-- XPLC
-- XFIR
-- XPOP
-- XROG
-- XGRP
-- TEXT
+This is an unofficial specification, and is therefore incomplete. However, large sections are complete. This specification also only applies to the .sc2 file format, and not how the game interprets the given values.
 
-Mostly complete sections:
-- MISC
-- XTXT
-- XLAB
-- XMIC
-- SCEN
+Complete sections:\
+CNAM, XTER, XBLD, XZON, XUND, XBIT, XBIT, XTRF, XPLT, XVAL, XCRM, XPLC, XFIR, XPOP, XROG, XGRP, TEXT
 
-Sections that need more work:
-- XTHG
-- PICT
+Mostly complete sections:\
+MISC, XTXT, XLAB, XMIC, SCEN
+
+Sections that need more work:\
+XTHG, PICT
 
 ## Chunks:
 
@@ -372,18 +352,18 @@ Given as value: tile type\
 0B: 0010\
 0C: 1000\
 0D: 1111\
-0E..0F: unknown. There aren't any other possible sprites in the game files.
+0E .. 0F: unknown. There aren't any other possible sprites in the game files.
 
 **Underwater:**\
-10..1D: Same as for dry land, but underwater.\
-1E..1F: unknown
+10 .. 1D: Same as for dry land, but underwater.\
+1E .. 1F: unknown
 
 **Shoreline:**\
-20..2D: Same as for dry land, 1 = up, or dry land, 0 = down or in the water.\
-2E..2F: unknown
+20 .. 2D: Same as for dry land, 1 = up, or dry land, 0 = down or in the water.\
+2E .. 2F: unknown
 
 **Surface Water:**\
-30..3D: Same as for dry land and shoreline, just with surface (0 depth water).\
+30 .. 3D: Same as for dry land and shoreline, just with surface (0 depth water).\
 3E: Waterfall tiles (such as under dams and elsewhere).\
 3F: unknown
 
@@ -394,7 +374,7 @@ Given as value: tile type\
 43: bay, water Left\
 44: bay, water Top\
 45: bay, water Right\
-46..FF: unknown\
+46 .. FF: unknown\
 _Note: none of the above unknown values appeared in multiple cities._\
 
 ## XBLD
@@ -454,7 +434,7 @@ Index: Name (SCURK name if different)
 
 **Rail:**\
 Additional slope pieces denoted with H for the half-high end.\
-2C..3A: Coding as for power lines\
+2C .. 3A: Coding as for power lines\
 3B: HT-B\
 3C: L-HR\
 3D: T-HB\
@@ -763,16 +743,16 @@ Store the underground part of a tile.\
 3A: Museum\
 3B: Library System\
 3C: Marina\
-3D..C8: 140 other microsim labels
+3D .. C8: 140 other microsim labels
 
-For: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)\
+For: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)
 
-C9..F0: Things treated like signs. Index to XTHG, probably.
+C9 .. F0: Things treated like signs. Index to XTHG, probably.
 
-_Notes:_ Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 40 total positions, 33 fire/police/military total. If you have a lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.
-	
+_Notes:_ Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 40 total positions, 33 fire/police/military total. If you have a lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\	
 The tornado, monster, crashing airplane as well. Explosions might also appear in here, but may not be saved in the city file.\
-F1..F9: unknown, not in multiple cities checked.\
+
+F1 .. F9: unknown, not in multiple cities checked.\
 FA: Neighbour connection\
 FB: toxic cloud\
 FC: flood\
@@ -808,7 +788,7 @@ Probably the first 10 are for the built in microsims, and the next 140 for the r
 
 _Note:_ This section is mostly incomplete and is presently more structured as notes.
 
-00..01: Changes when going from terrain to city mode.
+00 .. 01: Changes when going from terrain to city mode.
 
 0x0000->0x0402 bit flags? 000000000000->0000010000000010
 
@@ -905,7 +885,7 @@ Minimap window seems to bin these in 16 even blocks.
 
 Police coverage
 
-## #XFIR
+### XFIR
 
 Fire coverage.
 
@@ -1009,6 +989,6 @@ Seems to be total cash on hand, not counting debts from bonds.
 
 Sometimes there’s an extra 4 bytes of 0s at the end.
 
-## PICT
+### PICT
 
-	Image for the scenario.
+Image for the scenario.
