@@ -6,3 +6,4 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 ## Contents:
 - sc2 file spec.md: specifications on the .sc2 file format.
 - sprite data spec.md: Specifications of the data files used to store the various building, terrain, road and other sprites in the game with a section for the additional specifications for MIF files.
+- text data spec.md: Specifications for the newspaper and other text data files for the game. The newspaper specification is considered a work in progress as it can parse all of the text, but very little around how stories are composed has been determined.
