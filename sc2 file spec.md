@@ -766,6 +766,34 @@ Labels pointed to by the pointers from XTXT.
 
 6400/25=256, so 256 x 25B labels stored as ASCII text. Labels aren't just signs, but also things like the names for microsims that can have names given to them.
 
+**Label Structure**
+
+Label structure uses similar offsets as in XTXT.
+
+|Offset|Label Use|
+|---|---|
+| 0x00 | Mayor's Name |
+| 0x01 .. 0x32 | 50 User Defined Signs |
+| 0x33 | Unknown |
+| 0x34 | Bus |
+| 0x35 | Rail |
+| 0x36 | Subway |
+| 0x37 | Wind Power |
+| 0x38 | Hydro Power |
+| 0x39 | Parks |
+| 0x3A | Museum |
+| 0x3B | Library |
+| 0x3C | Marina |
+| 0x3D | Stadium |
+| 0x3E .. 0xCA | 140 Microsim labels |
+| 0xCB .. 0xFA | 47 Unknown labels |
+| 0xFB | Sports team: Football |
+| 0xFC | Sports team: Baseball |
+| 0xFD | Sports team: Soccer |
+| 0xFE | Sports team: Cricket |
+| 0xFF | Sports team: Rugby |
+
+
 ## XMIC
 
 150 x 8B microsims\
