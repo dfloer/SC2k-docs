@@ -52,9 +52,9 @@ Rest of the file has a 4B chunk id (which is 4 ASCII characters between 0x20 and
 
 #### Chunks only in Scenario Files
 
-- [TEXT](#text)
-- [SCEN](#scen)
-- [PICT](#pict)
+- [TEXT](#text): variable length (2 entries)
+- [SCEN](#scen): 52
+- [PICT](#pict): variable length (uncompressed)
 
 ## Compression:
 
@@ -1019,4 +1019,17 @@ Sometimes there’s an extra 4 bytes of 0s at the end.
 
 ### PICT
 
-Image for the scenario.
+Image data for the scenario. All of the observed scenarios appear to be 65x65 pictures, with a 1px border on them, making the effective size actually 63x63.
+
+**Data Format**
+
+| Offset | Length | Use |
+|---|---|---|
+| 0x00 | 4B | Header, seems to always be `0x80 0x00 0x00 0x00` |
+| 0x04 | 2B | X size of image in pixels. |
+| 0x06 | 2B | Y size of image in pixels. |
+| 0x08 | varies | Rows of image data. |
+
+Each row of image data is the Y dimension single pixel bytes, with and additional 0xFF denoting the end of a row. Additionally, the first and last row being all 0x01 and the first and last pixel of all other rows being 0x01. Colors chosen from an internal pallete, likely PAL_MSTR.BMP as used for all other ingame graphics.
+
+
