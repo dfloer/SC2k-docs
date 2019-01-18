@@ -124,8 +124,8 @@ Miscellaneous city data, 4B/32b integers:
 |06D8 .. 0718 | Neighour Data | 4x4B of neighbour information. Form is: neighbour index, neighbour population, neighbour value (unknown what exactly this is) and neighbour fame (again unknown). Ordering is: lower left, upper left,  unknown,  upper right,  bottom right.|
 |0710 | Unknown | Seems to be 0 in an established city (full RCI), +’ve in others. Unknown exactly.|
 |0718 .. 0720 | RCI demand | Signed 32b int from -1999 to +2000. First R, second C, third I.|
-|0738 .. 0778 | Technology Discovery Years | Contains the year the technology was discovered. Appears to be 0 if the city was saved after the technology was invented. Details in [Technology Discovery Years Table](#technology discovery years)|
-|077C .. 08BF | Property taxes | Each takes 27*4B. See [Tax Rate Table](#tax rate details) |
+|0738 .. 0778 | Technology Discovery Years | Contains the year the technology was discovered. Appears to be 0 if the city was saved after the technology was invented. Details in [Technology Discovery Years Table](#technology-discovery-years)|
+|077C .. 08BF | Property taxes | Each takes 27*4B. See [Tax Rate Table](#budget-tax-rate-details) |
 | 077C | residential tax rate | Residential zoned building tax rate, between 0 and 20. |
 | 07E8 | commercial tax rate | Commercial zoned building tax rate, between 0 and 20. |
 | 0854 | Industrial tax rate | Industrial zoned building tax rate, between 0 and 20. |
@@ -375,7 +375,7 @@ Given as value: tile type\
 44: bay, water Top\
 45: bay, water Right\
 46 .. FF: unknown\
-_Note: none of the above unknown values appeared in multiple cities._\
+_Note: none of the above unknown values appeared in multiple cities._
 
 ## XBLD
 Stores what building occupies a tile.
@@ -496,7 +496,7 @@ _Note:_ These can be rotated 90 degrees by bit 6 in xbit.\
 66: BL\
 67: TL\
 68: TR\
-69: LTBR\
+69: LTBR
 
 **Reinforced Bridge:**\
 6A: Pylon\
@@ -536,13 +536,13 @@ _Note:_ These can be rotated 90 degrees by bit 6 in xbit.\
 84: Warehouse (Small WareHouse 1)\
 85: Chemical Storage (Chemical Storage)\
 86: Warehouse (Small WareHouse 1)\
-87: Industrial substation (Industral Substation)\
+87: Industrial substation (Industral Substation)
 
 **Misc 1x1:**\
 88: Construction (Construction 7)\
 89: Construction (Construction 8)\
 8A: Abandoned building (Abandoned Building 1)\
-8B: Abandoned building (Abandoned Building 2)\
+8B: Abandoned building (Abandoned Building 2)
 
 **Residential 2x2:**\
 8C: Cheap apartments (Small Apartments 1)\
@@ -642,7 +642,7 @@ D7: Stadium\
 D8: Prison\
 D9: College\
 DA: Zoo\
-DB: Statue\
+DB: Statue
 
 **Infrastructure (not power plants):**\
 DC: Water Pump\
@@ -702,16 +702,16 @@ Second 4 bits: encode the following zone information.\
 2: Dense Residential (0010)\
 3: Light Commercial (0011)\
 4: Dense Commercial (0100)\
-5: Light Industrial (0101)\
+5: Light Industrial (0101)\ 
 6: Dense Industrial (0110)\
-7: Military (0111)\ 
+7: Military (0111)\
 8: Airport (1000)\
 9: Seaport (1001)\
 10 .. 15: Appear to be unused.
 
 _Notes:_\
 No city appears to have anything with a hex byte ending in A .. F, so probably unused or saved for future expansion.\
-Small park is 1111 0000, no zone but all four corners in one (1x1).\
+Small park is 1111 0000, no zone but all four corners in one (1x1).
 
 ## XUND
 
@@ -749,8 +749,8 @@ For: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power 
 
 C9 .. F0: Things treated like signs. Index to XTHG, probably.
 
-_Notes:_ Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 40 total positions, 33 fire/police/military total. If you have a lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\	
-The tornado, monster, crashing airplane as well. Explosions might also appear in here, but may not be saved in the city file.\
+_Notes:_ Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 40 total positions, 33 fire/police/military total. If you have a lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\
+The tornado, monster, crashing airplane as well. Explosions might also appear in here, but may not be saved in the city file.
 
 F1 .. F9: unknown, not in multiple cities checked.\
 FA: Neighbour connection\
