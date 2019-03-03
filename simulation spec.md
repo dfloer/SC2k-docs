@@ -19,7 +19,7 @@ The simulation is initialized with several values:
   1. starting funds: $20,000.
   2. starting funds: $10,000.
   3. starting funds: $10,000. This is a bond at 3% interest.
-- Invention dates are calculated from the base year they can be invented with an additional 0 to 19 years randomly added.
+- Invention dates are calculated from the base year they can be [invented](https://github.com/dfloer/SC2k-docs/blob/master/sc2%20file%20spec.md#technology-discovery-years) with an additional 0 to 19 years randomly added.
 
 ### Terrain Generation:
 
@@ -55,7 +55,7 @@ Efficiency is simply the number of tiles a plant can power / the number of tiles
 
 Methodology to determine: A city was made with all 32 terrain levels to determine how elevation affects output.
 
-The power output of a wind turbine is: `altitude // 2 + [0, 3]` where the 0-3 seems to be partially determined by how windy (a 0-255 range) it is, normalized to a 0-32 range with some randomness added.
+The power output of a wind turbine is: `altitude // 2 + [0, 3]` where the 0-3 seems to be partially determined by how windy it is, normalized to a 0-32 range with some randomness added.
 
 | Altitude (steps) |Altitude (feet) | Minimum Tiles Powered | Maximum Tiles Powered |
 |---|---|---|---|
@@ -99,9 +99,10 @@ Nominal base output is ~136 (8 powered tiles/solar tile). Formula appears to be:
 
 Inspection of a game showed that the minimum output was 0, the maximum output was 190 and the average was 136.
 
+### Disasters:
 
 
-### Game Modes:
+### Game Models:
 #### Crime Model:
 Total amount of crime is stored in MISC as Crime Count. This is the sum of all values in XCRM.\
 For purposes of display in the graph windows, 1 point in the window is 3750 points of crime, rounded up.
@@ -113,9 +114,11 @@ City value seems to be land value / 2.
 #### Traffic Model:
 Total traffic is stored in MISC as Traffic Count. It does not appear to be the sum of all the values in XTRF.
 
+#### Weather:
+The game tracks four different variables relating to weather:\
+- Heat (temperature?)
+- Wind: range 0-255.
+- Humidity
+- The actual weather. [Weather types](https://github.com/dfloer/SC2k-docs/blob/master/sc2%20file%20spec.md#weather-type)
 
-
-
-
-
-
+Reportedly, crime and the weather are linked, and weather can effect disasters as well.

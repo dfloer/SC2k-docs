@@ -80,13 +80,13 @@ Miscellaneous city data, 4B/32b integers:
 |---|---|---|
 |0000| Unknown (header?) | `00 00 01 22` in 114 cities checked.|
 |0004 | City Mode | 0 for terrain edit mode, 1 for city, 2 for disaster mode.|
-|0008 | Rotation | Internally called compass. Number between 0 and 3 corresponding to number of counterclockwise rotations.|
+|0008 | Rotation | Internally called compass. Number between 0 and 3 corresponding to number of counter-clockwise rotations.|
 |000C | Year Founded | Year city was founded.|
-|0010 | City Age | days since city was founded in 300 day years, and 25 day months? example: date=2435, founded= 2050, (2435-2050)=385. month=july=07, so 385(300)+7*25=115,650. In save file: 115,663, so probably a few day into July.|
+|0010 | City Age | days since city was founded in 300 day years, and 25 day months? example: date=2435, founded= 2050, (2435-2050)=385. month=July=07, so 385(300)+7*25=115,650. In save file: 115,663, so probably a few day into July.|
 |0014 | Money | Stored as signed 32b int |
 |0018 | Number of bonds. |
 |001C |  Game Level | This seems related to the difficulty the game was started with.|
-|0020 |  City Status | Unknown |
+|0020 |  City Status | Reward tier obtained. 0 = None, 1 = Mayor's Mansion, 2 = City Hall, 3 = Statue, 4 = Military, 5 = Llama Dome, 6 = Arcos. |
 |0024 | City Value | Unknown exactly, stores something to do with total city value.|
 |0028 | Land Value | Sum of all the values in XVAL. |
 |002C | Crime Count | This is a sum of all of the values stored in XCRM.|
@@ -117,11 +117,11 @@ Miscellaneous city data, 4B/32b integers:
 |05F8 | Residential Tile Count | |
 |05FC | ? | Something like it should be the other half of Residential Tile Count.|
 |0600 | Commercial Tile Count | |
-|0604 | ? | Something like the other half of commerial tile count.|
+|0604 | ? | Something like the other half of commercial tile count.|
 |0608 | Industrial Tile Count | |
 |060C | ? | Something like the other half of industrial tile count.|
 |0610 .. 06D7 | Bond Data | bonds, maximum of 50, signed 32b int. Famous overflow in game. |
-|06D8 .. 0718 | Neighour Data | 4x4B of neighbour information. Form is: neighbour index, neighbour population, neighbour value (unknown what exactly this is) and neighbour fame (again unknown). Ordering is: lower left, upper left,  unknown,  upper right,  bottom right.|
+|06D8 .. 0718 | Neighbour Data | 4x4B of neighbour information. Form is: neighbour index, neighbour population, neighbour value (unknown what exactly this is) and neighbour fame (again unknown). Ordering is: lower left, upper left,  unknown,  upper right,  bottom right.|
 |0710 | Unknown | Seems to be 0 in an established city (full RCI), +’ve in others. Unknown exactly.|
 |0718 .. 0720 | RCI demand | Signed 32b int from -1999 to +2000. First R, second C, third I.|
 |0738 .. 0778 | Technology Discovery Years | Contains the year the technology was discovered. Appears to be 0 if the city was saved after the technology was invented. Details in [Technology Discovery Years Table](#technology-discovery-years)|
@@ -136,7 +136,7 @@ Miscellaneous city data, 4B/32b integers:
 | 0E40 | Water level | Water table level.|
 | 0E44 | terrain - coast | Was this city generated with coastal terrain. |
 | 0E48 | terrain - river | Was this city generated with river terrain. |
-| 0E4C | Military Base | Not offered base: 0, offered base but no suitable location: 1, 2: army base, 3: airbase, 4 navy: base, 5: missile silos |
+| 0E4C | Military Base | Not offered base: 0, offered base but no suitable location/refused base: 1, 2: army base, 3: airbase, 4 navy: base, 5: missile silos |
 | 0E50 .. 0EC4 |Newspaper List | Unknown exactly, 6x5B structure.|
 | 0EC8 .. 0EFC | Newspaper List | Unknown exactly, 9x6B structure.|
 | 0FA0 | Ordinances flags | Bit flags for which of the 20 ordinances are enacted. 00000000:none, 000fffff:20. First ordinances (finance) section are rightmost bits. |
@@ -150,7 +150,7 @@ Miscellaneous city data, 4B/32b integers:
 | 0FFC | Music | Music setting. |
 | 1000 | Disasters | No disasters setting. |
 | 1004 | Paper Delivery | Is paper delivery enabled. |
-| 1008 | Extra Newaspaper | Is the Extra!!! newspaper enabled. |
+| 1008 | Extra Newspaper | Is the Extra!!! newspaper enabled. |
 | 100C | Newspaper Choice | Which newspaper is chosen to be delivered.|
 | 1010 | Unknown | Observed to be 0x80 in many cities. |
 | 1014 | Seems to have something to do with zoom and position of map. |
@@ -162,7 +162,7 @@ Miscellaneous city data, 4B/32b integers:
 | 102C | Normal Population | Total city population from normal zones (not arcos). |
 | 1030 | Industry Bonus | Unknown |
 | 1034 | Pollution Bonus | Unknown |
-| 1038 | Old Arrest | Unknown |
+| 1038 | Old Arrest | Sum of all the police station microsim arrests. |
 | 103C | Police Bonus | Unknown |
 | 1040 | Disaster  | Unknown |
 | 1044 | Unknown | Unknown |
@@ -230,7 +230,7 @@ Miscellaneous city data, 4B/32b integers:
 |0758 | Buses | |
 |075C | Subways | |
 |0760 | Water treatment | |
-|0764 | Desalinisation | |
+|0764 | Desalinization | |
 |0768 | Plymouth arco | |
 |076C | Forest arco | |
 |0770 | Darco | |
@@ -271,7 +271,7 @@ The number corresponds to a 4B offset for the start of the segment.
 		
 #### Budget City Service Details
 
-Each segment has 27 x 4B entries structered.
+Each segment has 27 x 4B entries structured.
 The number corresponds to a 4B offset for the start of the segment.
 0. current number of that building.
 1. current funding rate (0 .. 100%)
@@ -481,7 +481,7 @@ Additional slope pieces denoted with H for the half-high end.\
 5C: Elevated Power Lines
 
 **Highway Entrance (Onramps):**\
-_Note:_ These can be rotated 90 degrees by bit 6 in xbit.\
+_Note:_ These can be rotated 90 degrees by bit 6 in XBIT.\
 5D: Highway-T, Road-L\
 5E: Highway-T, Road-R\
 5F: Highway-B, Road-L\
@@ -996,7 +996,7 @@ Commercial Goal: 4 bytes
 
 Industrial Goal: 4 bytes
 
-Cash Goal Funds wihtout: 4 bytes\
+Cash Goal Funds without: 4 bytes\
 Seems to be total cash on hand, not counting debts from bonds.
 
 *Land Value Goal: 4 bytes
@@ -1030,6 +1030,6 @@ Image data for the scenario. All of the observed scenarios appear to be 65x65 pi
 | 0x06 | 2B | Y size of image in pixels. |
 | 0x08 | varies | Rows of image data. |
 
-Each row of image data is the Y dimension single pixel bytes, with and additional 0xFF denoting the end of a row. Additionally, the first and last row being all 0x01 and the first and last pixel of all other rows being 0x01. Colors chosen from an internal pallete, likely PAL_MSTR.BMP as used for all other ingame graphics.
+Each row of image data is the Y dimension single pixel bytes, with and additional 0xFF denoting the end of a row. Additionally, the first and last row being all 0x01 and the first and last pixel of all other rows being 0x01. Colours chosen from an internal palette, likely PAL_MSTR.BMP as used for all other ingame graphics.
 
 
