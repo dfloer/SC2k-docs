@@ -1,5 +1,5 @@
 # Text File Specifications
-Covers the contents of the newspapers in DATA_USA and [other ingame text](#other-ingame-text) in TEXT_USA (though it should work for other localizations, only tested with the USA version).
+Covers the contents of the newspapers in DATA_USA and [other ingame text](#other-ingame-text) in TEXT_USA (though it should work for other localizations, only tested with the USA version). Written for the Windows 95 Special Edition version.
 ## Newspapers
 DATA_USA.DAT has the raw newspaper text, and some metadata on how to build stories.
 DATA_USA.IDX has an index for reading the various parts of the newspaper data file.

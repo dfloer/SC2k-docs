@@ -1,5 +1,5 @@
 # Sprite File Specification
-Specifations on how the various sprite data files are formatted. Includes [MIF](#mif-files) files.
+Specification on how the various sprite data files are formatted for the Windows 95 Special Edition version. Includes [MIF](#mif-files) files.
 ## LARGE.DAT, SMALLMED.DAT, SPECIAL.DAT
 ### Overall File Structure
 A header and chunks containing a sprite in them pointed to by the header.\

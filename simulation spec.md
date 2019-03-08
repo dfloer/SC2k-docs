@@ -2,7 +2,7 @@
 
 ## About these specifications:
 
-At this point, these specifications are largely structured as notes rather an implementable specification due to the very incomplete nature of them.
+At this point, these specifications are largely structured as notes rather an implementable specification due to the very incomplete nature of them. Written for the Windows 95 Special Edition version.
 
 ### Starting a New City:
 
