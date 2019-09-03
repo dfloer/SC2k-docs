@@ -73,3 +73,33 @@ After length, structure is:
 06 .. 0A: length of pixel data.
 
 _Note:_ Pixel data is in same format as stored in sprite data files, with one change. The end of a file in indicated by a row with the form \x02\x01\x02\x02. Other than that, parsing is the exact same, except that sometimes the pixel count in mode 4 is an odd number, and this is likely due to a bug or corruption and should be ignored.
+
+## LARGE.HED, SMALL.HED, OTHER.HED
+These are the header files for the DOS version that describe the contents of the LARGE.DAT, SMALL.DAT and OTHER.DAT sprite files. They are always contained in an archive file with an associated DAT file, either the base archive or a TIL/URK file.
+### Overall File Structure
+Each HED file contains 1500 entries with each entry being 6B + 2B of padding in between.\
+Null entries (which do not correspond to a sprite) are all 0xFF, and the padding is always all 0xFF.\
+
+- 0x00 .. 0x03: 4B int, little-endian offse into the DAT file where the sprite begins
+- 0x04: 1B int, sprite height
+- 0x05: 1B int, sprite width
+- 0x06 .. 0x07: 2B padding, always 0xFFFF
+
+## LARGE.DAT, SMALL.DAT, OTHER.DAT
+Similarly named to the Windows 95 sprite files, these DOS sprite files have a completely different format. It is always contained in an archive file with an associated HED file, either in the base archive or a TIL/URK file.
+### Overall File Structure
+DAT files contain sequences of variable length row data. Each sprite starts at an offset specified by the HED file.\
+Each row starts with a marker value of 0x10, followed by a 1B int for the number of bytes in the row (this value includes the 1B for the length byte but not the row marker).\
+Following the length byte is a byte that specifies the type of the chunk, which have different headers:
+
+- 0x04: This portion of the row starts at the next leftmost pixel. Followed by 1B for the number of pixels in this chunk.
+- 0x0C: This portion of the row starts at an offset. Followed by 3B:
+	- 1B: The number of pixels for the offset
+	- 1B: Unknown
+	- 1B: The number of pixels in this chunk
+
+Pixel data follows, which is stored as palette indices, as with the other formats.
+
+Multiple chunks can be stored in the same row to allow for non-adjacent color regions. This is done by specifying a larger number of bytes in the row and putting multiple chunks in a row that don't have enough bytes to fill up the row.
+
+The end of a sprite is marked by 0x00 instead of the 0x10 that marks another row. Some TIL files use the pattern 0x10 0x01 0x00 to mark invalid sprites, as this signifies a sprite with one row with no pixel data in that row.
