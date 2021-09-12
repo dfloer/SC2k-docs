@@ -11,7 +11,7 @@ This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 Inter
 - `simulation spec.md`: Specifications for how the actual simulation works. Examples: how the power or water system works, how traffic works.
 
 ## Status:
-The sc2 file specifications are largely complete. Sprite parsing is complete. The text data is useful to getting raw data for the newspapers, but not generating newspaper stories, while the rest of the text format is simple and captured in the documents.
+The sc2 file specifications are largely complete. Sprite parsing is complete. The text data is useful enough to generate any complete newspaper stories, while the rest of the text format is simple and captured in the documents.
 
 The simulation spec is a start at cataloguing all of the information about the internals of the game.
 
