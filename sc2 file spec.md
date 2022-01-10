@@ -29,10 +29,10 @@ Rest of the file has a 4B chunk id (which is 4 ASCII characters between 0x20 and
 #### Chunks in the file and their uncompressed lengths:
 
 - [CNAM](#cnam): 32 (Stored uncompressed. May be optional in Mac files.)
-- [MISC](#misc): 4800    
+- [MISC](#misc): 4800
 - [ALTM](#altm): 32768 (Stored uncompressed.)
-- [XTER](#xter): 16384    
-- [XBLD](#xbld): 16384    
+- [XTER](#xter): 16384
+- [XBLD](#xbld): 16384
 - [XZON](#xzon): 16384
 - [XUND](#xund): 16384
 - [XTXT](#xtxt): 16384
@@ -96,12 +96,12 @@ Miscellaneous city data, 4B/32b integers:
 |003C | Advertising | Unknown |
 |0040 | Garbage | Unknown |
 |0044 | Work Force % | What percentage of the population is working? |
-|0048 | Work Force LE | LE = Life Expectancy | 
+|0048 | Work Force LE | LE = Life Expectancy |
 |004C | Work Force EQ | EQ = Education Quotient |
 |0050| National Population | Population of SimNation|
 |0054 |  National Value| Unknown |
 |0058 | National Tax | Unknown |
-|005C| Null? | Possibly Null |
+|005C| National Trend | How is the sim nation economy doing? This affects interest rates. |
 |0060| Heat | Something weather related.|
 |0064 | Wind | Something weather related. |
 |0068 | Humid | Something weather related. |
@@ -268,7 +268,7 @@ The number corresponds to a 4B offset for the start of the segment.
 24. tax rate November
 25. December population
 26. tax rate December
-		
+
 #### Budget City Service Details
 
 Each segment has 27 x 4B entries structured.
@@ -333,7 +333,7 @@ Describes how a terrain tile slopes, based on its 4 corners and is represented a
 
 a is top left:\
 |a|b|\
-|x|y| 
+|x|y|
 
 Tile type denoted as: 0=down, 1=up\
 Given as value: tile type\
@@ -702,7 +702,7 @@ Second 4 bits: encode the following zone information.\
 2: Dense Residential (0010)\
 3: Light Commercial (0011)\
 4: Dense Commercial (0100)\
-5: Light Industrial (0101)\ 
+5: Light Industrial (0101)\
 6: Dense Industrial (0110)\
 7: Military (0111)\
 8: Airport (1000)\
@@ -762,11 +762,15 @@ FF: fire
 
 ## XLAB
 
-Labels pointed to by the pointers from XTXT.
+Labels pointed to by the pointers from [XTXT](#xtxt). 256 total entries.
 
-6400/25=256, so 256 x 25B labels stored as ASCII text. Labels aren't just signs, but also things like the names for microsims that can have names given to them.
+Labels aren't just signs, but also things like the names for microsims that can have names given to them.
 
-**Label Structure**
+### Label Data Structure
+
+Each entry is a fixed 25 bytes. The first byte is the length of the ASCII data, then up to 23 bytes of ASCII text and finally a null (`/x00`) termination. If the termination is not the 25th byte, the rest is padded out by null data (or, due to a bug in some versions of the game, garbage data).
+
+### Label Indices
 
 Label structure uses similar offsets as in XTXT.
 
@@ -793,7 +797,6 @@ Label structure uses similar offsets as in XTXT.
 | 0xFE | Sports team: Cricket |
 | 0xFF | Sports team: Rugby |
 
-
 ## XMIC
 
 150 x 8B microsims\
@@ -809,7 +812,6 @@ Probably the first 10 are for the built in microsims, and the next 140 for the r
 	F3 = mansion, 28 = 4th stat, 08 4A = 2nd stat, 00=(maybe third stat), 5e = first stat, 00 00 could be padding or employees.
 	Llama Dome example: FF 8B 07 C1 01 07 00 80
 	8B=first stat, 07C1=2nd, 0107=3rd, 00=?, 80=4th, but 5th in game (# of weddings) is 139 (0x8B)
-	
 
 
 ## XTHG
@@ -835,7 +837,7 @@ Basic structure for a chunk seems to be:
 |Offset|Usage|
 |---|---|
 | 00 | int representing the id of the tile |
-| 01 | unknown data, rotation?|	
+| 01 | unknown data, rotation?|
 | 02 | unknown data, rotation? (for id=9, this seems to turn the boat into nessie)|
 | 03 | tile x coordinate |
 | 04 | tile y coordinate |
@@ -853,7 +855,7 @@ Basic structure for a chunk seems to be:
 0x3: Ship\
 0x4: Unknown\
 0x5: monster\
-0x6: Unknown\
+0x6: Explosion\
 0x7: Police Deploy\
 0x8: Fire Deploy\
 0x9: Sailboat\
