@@ -1,50 +1,143 @@
 # Sprite File Specification
-Specification on how the various sprite data files are formatted for the Windows 95 Special Edition version. Includes [MIF](#mif-files) files.
-## LARGE.DAT, SMALLMED.DAT, SPECIAL.DAT
-### Overall File Structure
-A header and chunks containing a sprite in them pointed to by the header.\
-Header starts at address 0x00, and the sprite chunks fill the rest of the file.
-### Header Structure
-The first two byte contain the number of entries in the header.\
-The rest of the header is repeated 10 bytes blocks, with a total number equal to the previous count.\
-Each 10B block contains:\
-0x00, 0x01: 2B int, the ingame id that the chunk represents.\
-0x02 .. 0x05: 4B int,  the absolute offset from the start of the file where the start of a chunk is.\
-0x06 .. 0x08: 2B int, the sprite’s height in pixels.\
-0x09 .. 0x0A: 2B int, the sprite’s width in pixels.
 
-_Note:_ some blocks with the same ID appear twice, the second it spurious.
+Specification on how the various sprite data files are formatted for the Windows 95 Special Edition version as well as the DOS version. Includes [MIF](#mif-files) files.
+
+## Windows 95 Sprite Format
+
+This version stores sprite information in `LARGE.DAT`, `SMALLMED.DAT`, `SPECIAL.DAT`.
+
+### Overall File Structure
+
+A header and chunks containing a sprite in them pointed to by the header.
+
+Header starts at address 0x00, and the sprite chunks fill the rest of the file.
+
+### Header Structure
+
+The header contains two parts. A count of total number of sprites stored in the file, and then metadata related to each sprite. There's one metadata per sprite.
+
+_Note:_ some blocks with the same ID appear twice, the second is spurious and can be ignored.
+
+#### Sprite Count
+
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 2B | Sprite Count | Contains the number of entries in the header. |
+
+#### Sprite Metadata
+
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 2B | ID | ID that the chunk represents, this is the same scheme used in XBLD. |
+| 0x02 | Integer | 4B | Offset | The absolute offset from the start of the file where the start of a chunk is. |
+| 0x06 | Integer | 2B | height | The sprite's height, in pixels. Number of rows. |
+| 0x08 | Integer | 2B | width | The sprite's width, in pixels. Number of columns. |
 
 ### Sprite Data Structure
-A sprite is made up of multiple rows of pixel data.\
-Each row of pixel data starts with a two 1B ints. The first contains length of the rest of the block after this part. The second indicates whether or not more pixel data follows. 0x01=more, 0x02=last line.\
-The amount of pixel data can be 0, which means to draw a blank row.
 
-For a row of pixel data, the structure is as follows:
-- 0x00: 1B int, count, varies by mode.
-- 0x01: 1B int, the mode that the row can be. Can be 0, 3, or 4.
-  - mode 3 (in this mode, pixels start at an offset from the left edge):
-	- 0x00: 1B int, number of pixels from the edge to start first pixel.
-    - 0x02: 1B int, count of pixels in this row.
-    - 0x03: 1B int, extra information (I’m not entirely sure what it does at this time.
-    - if the previous two values are both 0:
-      - 0x04: 1B int, count of pixels in this row.
-      - 0x05: 1B int, extra information (I’m not entirely sure what this does).
-      - 0x06 .. count, 1B per pixel, stores the colour information for that pixel.
-    - 0x04 .. count: 1B per pixel, stores the colour information for that pixel.
-  - mode 4 (in this mode, pixels start right at the edge):
-    - 0x00: 1B int, count of pixels in this row.
-    - 0x02 .. count, 1B per pixel, stores the colour information for that pixel.
-  - mode 0 (in this mode, there are multiple blocks in the row):
-    - As in mode 3 (this appears to work, but seems hacky).
-	
-_Note:_ number of rows = height.
+Sprite data is made up of a sequence of chunks. Each block stars with metadata about the following pixel data. If count is `0`, then this is a blank row.
 
-### Colours:
-There are three palette files in the SC2k `Bitmap/` directory, that contain a 16x16 grid of pixel colours. The game colours the pixels it displays based on one of these palettes (probably “PAL_MSTR.BMP”) based on the pixel’s number. It does this by taking the high order nibble of the bit, as an integer and uses that as an index for the row in the 16x16 array of colour values, and the low order nibble as the index to the column.
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 1B | Count | Count, which means different things for different block types. |
+| 0x01 | Integer | 1B | Chunk Mode | Pixel data is packed into blocks differently, which is described below. |
+
+#### Pixel Data Chunk
+
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 1B | Count | Varies by mode the pixel data is stored in. |
+| 0x01 | Integer | 1B | Mode | Observed to be 0, 3 and 4. See next section for more. |
+| 0x02 ... | varies | varies | Pixel Data | Structure varies by pixel mode. |
+
+#### Chunk Mode
+
+There are several different modes pixel data pixel data can be stored in a chunk.
+
+| Chunk Type | Notes |
+|------------|-------|
+| 0 | Empty block. This is ignored. |
+| 1 | Start of a new row. The count specifies the offset to the start of the next row. |
+| 2 | End of a sprite. |
+| 3 | Skip | Skip the number of pixels specified by the count value. |
+| 4 | Actual pixel data. |
+
+##### Pixel Mode 0
+
+Ignored data. Skip this, it seems to be padding/filler.
+
+##### Pixel Mode 3
+
+In this mode, pixels start at an offset from the left edge.
+
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 1B | Edge Offset | Number of pixels from the edge to start the first pixel. |
+| 0x02 | Integer | 1B | Pixel Count | Count of pixels in this row. |
+
+#### Pixel Mode 4
+
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 1B | Edge Offset | Number of pixels from the edge to start the first pixel. |
+| 0x02 ... | varies | 1B/pixel | Pixel Index | Index into the palette to look up [colour](#colours). |
+| Last | Byte | 1B | Null | `0x00` for padding, only if the number of pixels is odd. |
+
+### Colours
+
+There are three palette files in the SC2k `Bitmap/` directory, that contain a 16x16 grid of pixel colours. The actual palette is stored in the bitmap, and is in `BGRX` form, where X is always fixed and can be safely ignored. It is 1024 bytes in size (8bpp). This appears to be standard for the time.
+
+The game colours the pixels it displays based on one of these palettes (`PAL_MSTR.BMP` seems to be the most common one, `PAL_STTC.BMP` has black for colour-cycling indices, so STTC probably means static) based on the pixel's number. It does this by taking the high order nibble of the bit, as an integer and uses that as an index for the row in the 16x16 array of colour values, and the low order nibble as the index to the column.
+
+Example: Pixel has value 0x42 = 0b01000010. Row: `0100` = 4. Column: `0010` = 2. so the index is (4, 2).
+
+### Pixel Data Parsing Example
+
+For this example, we'll look at how the highlighted row is parsed in the following sprite from the suspension bridge. Note that white pixels are transparent in the final result.
+
+![pixel data parsing example suspension bridge](images/pixel-parsing-bridge.png)
+
+With the raw data for the line being:
+
+```raw
+24 01 04 03 04 04 2A 29 28 28 01 03 01 04 26 00 03 03 00 00 01 04 26 00 02 03 00 00 08 04 2A 2A 00 00 28 28 00 00
+```
+
+Which is parsed as follows:
+
+- Row header `24 01`:
+  - `24`: indicates 0x24 (36) bytes following.
+  - `01`: indicates chunk mode, in this case, the start of a new row.
+- `04 03`:
+  - 4 pixels in row mode 3, skip four (transparent) pixels.
+- `04 04 2A 29 28 28`:
+  - `04 04`: 4 pixels in row mode 4.
+  - `2A 29 28 28`: Palette indices to look up.
+- `01 03`:
+  - 1 pixel in row mode 3, skip one (transparent) pixel.
+- `01 04 25 00`:
+  - `01 04`: 1 pixel in row mode 4.
+  - `25 00`: Palette index 0x25 with a null padding byte. Note that `00` is a valid palette index, but as there's only one pixel, this is a null byte.
+- `03 03`
+  - 3 pixels in row mode 3, skip 3 pixels left.
+- `00 00`
+  - Row mode 0, ignored.
+- `01 04 26 00`
+  - 1 pixel in row mode 4. Palette index 0x26 with a null padding byte.
+- `02 03`
+  - 2 pixels in row mode 3, skip 2 pixels left.
+- `00 00`
+  - Row mode 0, ignored.
+- `08 04 2A 2A 00 00 28 28 00 00`
+  - `08 04`: 8 pixels in mode 4.
+  - `2A 2A 00 00 28 28 00 00`:  Palette indices to look up.
+- The remainder of the row is assumed to be empty.
+
 ## MIF Files
-### Overall File Structure
-Is an IFF file, like the .sc2 file format. Generated in SCURK and loaded into the game to change the way buildings looked.\
+
+### Overall MIF Structure
+
+Is an IFF file, like the .sc2 file format. Generated in SCURK and loaded into the game to change the way buildings looks.\
 First 12 bytes are a header that consists of “MIFF”, length of file, “SC2K”.
 
 Two main sections:\
@@ -52,51 +145,71 @@ Two main sections:\
 **TILE:** First 4B is length of the contents, next two bytes is the number of sub pieces of data, either SHAP or NAME.
 
 #### NAME
-Comes before a SHAP object and changes the name displayed for that object.\
 
-|Offset|Purpose|
-|---|---|
-| 00 .. 03 | length of data following.|
-| 04 | Unknown |
-| 05 | Building type this name applies to. Same indices as the game uses for XBLD.|
-| 06 | Unknown |
-| 07 | length of name string|
-| 08 .. end | ASCII string with modified name.Maximum string length appears to be 0x16.|
+Comes before a SHAP object and changes the name displayed for that object.
+
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 4B | Length | Length of data following. |
+| 0x04 | Unknown | 1B | Unknown | Unknown |
+| 0x05 | Integer | Building ID | Building type this name applies to. Same indices as the game uses for XBLD.|
+| 0x06 | Unknown | 1B | Unknown | Unknown |
+| 0x07 | Integer | 1B | Name Length | Number of ASCII characters following for the name. |
+| 0x08 ... | ASCII | 1B/character | Name Text | ASCII string with modified name. Maximum string length appears to be 0x16. |
 
 #### SHAP
-First 4 bytes is a length.\
-After length, structure is:
 
-00 .. 01: building ID\
-02 .. 03: width in pixels of tile. Observed width are 8px, 16px, 24px, 32px, 48px, 64px, 96px and 128px\
-04 .. 05: height of image in pixels.\
-06 .. 0A: length of pixel data.
+Metadata related to the sprite (or "shape").
 
-_Note:_ Pixel data is in same format as stored in sprite data files, with one change. The end of a file in indicated by a row with the form \x02\x01\x02\x02. Other than that, parsing is the exact same, except that sometimes the pixel count in mode 4 is an odd number, and this is likely due to a bug or corruption and should be ignored.
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 4B | Length | Length of data following. |
+| 0x05 | Integer | Building ID | Building type this name applies to. Same indices as the game uses for XBLD.|
+| 0x06 | Integer | 1B | Width | Width in pixels of tile. |
+| 0x07 | Integer | 1B | Width | Width in pixels of tile. |
+| 0x08 | Integer | 4B | Pixel Data Length | Length of pixel data. |
 
-## LARGE.HED, SMALL.HED, OTHER.HED
+Observed tile widths: 8px, 16px, 24px, 32px, 48px, 64px, 96px and 128px
+
+_Note:_ Pixel data is in same format as stored in sprite data files, with one change. The end of a file in indicated by a row with the form \x02\x01\x02\x02. Other than that, parsing is the exact same, except that sometimes the pixel count in mode 4 is an odd number with no padding. This is likely due to a bug in SCURK and can be ignored.
+
+## DOS Sprite Format
+
+### Header Data
+
+Header data is stored in `LARGE.HED`, `SMALL.HED` and `OTHER.HED`
+
 These are the header files for the DOS version that describe the contents of the LARGE.DAT, SMALL.DAT and OTHER.DAT sprite files. They are always contained in an archive file with an associated DAT file, either the base archive or a TIL/URK file.
-### Overall File Structure
+
+### Overall Header File Structure
+
 Each HED file contains 1500 entries with each entry being 6B + 2B of padding in between.\
 Null entries (which do not correspond to a sprite) are all 0xFF, and the padding is always all 0xFF.\
 
-- 0x00 .. 0x03: 4B int, little-endian offse into the DAT file where the sprite begins
-- 0x04: 1B int, sprite height
-- 0x05: 1B int, sprite width
-- 0x06 .. 0x07: 2B padding, always 0xFFFF
+| Offset | Type | Length | Name | Notes |
+|--------|------|--------|------|-------|
+| 0x00 | Integer | 4B | Offset | Little-endian offset into the DAT file where the sprite begins. |
+| 0x04 | Integer | 1B | Height | Sprite height. |
+| 0x05 | Integer | 1B | Width | Sprite width. |
+| 0x06 | Byte | 2B | Padding | Always 0xFFFF. |
 
-## LARGE.DAT, SMALL.DAT, OTHER.DAT
+### Sprite Data
+
+Sprite data is stored in `LARGE.DAT`, `SMALL.DAT` and `OTHER.DAT`
+
 Similarly named to the Windows 95 sprite files, these DOS sprite files have a completely different format. It is always contained in an archive file with an associated HED file, either in the base archive or a TIL/URK file.
-### Overall File Structure
+
+### Overall Sprite File Structure
+
 DAT files contain sequences of variable length row data. Each sprite starts at an offset specified by the HED file.\
 Each row starts with a marker value of 0x10, followed by a 1B int for the number of bytes in the row (this value includes the 1B for the length byte but not the row marker).\
 Following the length byte is a byte that specifies the type of the chunk, which have different headers:
 
 - 0x04: This portion of the row starts at the next leftmost pixel. Followed by 1B for the number of pixels in this chunk.
 - 0x0C: This portion of the row starts at an offset. Followed by 3B:
-	- 1B: The number of pixels for the offset
-	- 1B: Unknown
-	- 1B: The number of pixels in this chunk
+  - 1B: The number of pixels for the offset
+  - 1B: Unknown
+  - 1B: The number of pixels in this chunk
 
 Pixel data follows, which is stored as palette indices, as with the other formats.
 
