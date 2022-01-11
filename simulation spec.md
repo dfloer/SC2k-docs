@@ -107,6 +107,7 @@ Inspection of a game showed that the minimum output was 0, the maximum output wa
 Total amount of crime is stored in MISC as Crime Count. This is the sum of all values in XCRM.\
 For purposes of display in the graph windows, 1 point in the window is 3750 points of crime, rounded up.
 
+The value stored in "Arrests" in MISC is the total number of arrests for each police station microsim.
 #### Land Value Model:
 Total land value is stored in MISC as Land Value. This is the sum of all the values in XVAL. For display in the bond window, the displayed value is city value * 1000. For the graph display, 1 point in the window is 3200 points of value, rounded up to the nearest whole number. \
 City value seems to be land value / 2.
@@ -116,9 +117,35 @@ Total traffic is stored in MISC as Traffic Count. It does not appear to be the s
 
 #### Weather:
 The game tracks four different variables relating to weather:\
+
 - Heat (temperature?)
 - Wind: range 0-255.
 - Humidity
 - The actual weather. [Weather types](https://github.com/dfloer/SC2k-docs/blob/master/sc2%20file%20spec.md#weather-type)
 
 Reportedly, crime and the weather are linked, and weather can effect disasters as well.
+
+#### Miscellaneous Notes
+
+The buildings that cause NIMBY reactions are:
+
+- Gas Power Plant
+- Oil Power Plant
+- Nuclear Power
+- Coal Power
+- Prison
+- Water Treatment Plant
+
+Churches appear every 5000 people, without arcos.
+
+Cheats:
+
+- `joke`
+- `gilmartin`
+- `priscilla`
+- `noah`
+- `iamacheat`
+- `cass`
+- `fund`
+- `newhouse`
+  - The above cheat doesn't work, because when 'n' is typed, the game starts looking for noah, and never reaches this.
