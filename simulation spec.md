@@ -125,6 +125,14 @@ The game tracks four different variables relating to weather:\
 
 Reportedly, crime and the weather are linked, and weather can effect disasters as well.
 
+#### In Game Windows
+
+##### Budget
+
+For bonds, the game appears to display decimal rates rounded down in the budget window, but calculates costs based on the actual rate.
+
+The bond sum rate may be used to determine credit rating, in conjunction with the city's land value.
+
 #### Miscellaneous Notes
 
 The buildings that cause NIMBY reactions are:
@@ -149,3 +157,4 @@ Cheats:
 - `fund`
 - `newhouse`
   - The above cheat doesn't work, because when 'n' is typed, the game starts looking for noah, and never reaches this.
+

@@ -272,6 +272,42 @@ The number corresponds to a 4B offset for the start of the segment.
 25. December population
 26. tax rate December
 
+#### Bond Details
+
+The rate for the bond is stored as an integer, multiplied by 10,000. Example: a rate of 4% is stored as the integer 40,000.
+
+The average rate is the arithmetic average of all of the bonds currently floated, while the sum rate is just the sum of all the rates. Example: A 4% bond and a 25% bond have an average rate of 14.5%, with a sum rate of 29%.
+
+Note: In cities that have used the negative FUND trick/cheat, the "Sum Bond Rate" is incorrect. This is likely an artifact of the bug that allows the trick to work, and doesn't seem to matter.
+
+1. Current Count of Bonds Floated
+2. Current Average Bond Rate
+3. Sum Bond Rate
+4. January Count
+5. January Average Rate
+6. February Count
+7. February Average Rate
+8. March Count
+9. March Average Rate
+10. April Count
+11. April Average Rate
+12. May Count
+13. May Average Rate
+14. June Count
+15. June Average Rate
+16. July Count
+17. July Average Rate
+18. August Count
+19. August Average Rate
+20. September Count
+21. September Average Rate
+22. October Count
+23. October Average Rate
+24. November Count
+25. November Average Rate
+26. December Count
+27. December Average Rate
+
 #### Budget City Service Details
 
 Each segment has 27 x 4B entries structured.
