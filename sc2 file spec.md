@@ -52,9 +52,12 @@ Rest of the file has a 4B chunk id (which is 4 ASCII characters between 0x20 and
 
 #### Chunks only in Scenario Files
 
+Scenario specific entries are uncompressed.
+
 - [TEXT](#text): variable length (2 entries)
-- [SCEN](#scen): 52
-- [PICT](#pict): variable length (uncompressed)
+- [SCEN](#scen): 56
+- [PICT](#pict): variable length
+- [TMPL](#tmpl): 338
 
 ## Compression:
 
@@ -964,74 +967,64 @@ From beginning:
 |0B60 .. 0C2F | Nat’n Pop., in 1000s|
 |0C30 .. 0CFF | Fed Rate|
 
-# Additional Fields for Scenario Files
+## Additional Fields for Scenario Files
 
 ### TEXT
 
 Textual description of the scenario. Max lengths are unknown.
 
-Observed to have two entries. One for the description on the scenario screen, and one for the in game, extended description.\
-First 4 bytes are the type, 0x80 00 00 00 for the scenario screen description, 0x81 00 00 00 for the extended description
+There are two entries. The first four bytes describe the type of entry:
+
+- `80 00 00 00`: the scenario selection screen description.
+- `81 00 00 00`: the extended description shown in game when the scenario starts.
 
 ### SCEN
-Scenario win conditions.
 
-First 4 bytes always appear to be 0x80 00 00 00.
+Scenario information. This includes which disaster to trigger and where, as well as win conditions and the time limit
 
-Order still needs to be confirmed on some of these (marked with *).
+The entries after the time limit are the goals that need to be met before that time limit expires.
 
-Disaster Type: 2 bytes\
-Type of disaster, as defined in the MISC section.
-
-Disaster X Location: 1 byte
-
-Disaster Y Location: 1 byte
-
-Time Limit (Months): 2 bytes
-
-City Size Goal: 4 bytes\
-Seems to be comparing against the normal city population without arcos from MISC.
-
-Residential Goal: 4 bytes
-
-Commercial Goal: 4 bytes
-
-Industrial Goal: 4 bytes
-
-Cash Goal Funds without: 4 bytes\
-Seems to be total cash on hand, not counting debts from bonds.
-
-*Land Value Goal: 4 bytes
-
-*Pollution Limit: 4 bytes
-
-*Crime Limit: 4 bytes
-
-*Traffic Limit: 4 bytes
-
-*Build Item One: 1 byte
-
-*Build Item Two: 1 byte
-
-*Item One Tiles: 2 bytes
-
-*Item Two Tiles: 2 bytes
-
-Sometimes there’s an extra 4 bytes of 0s at the end.
+| Offset | Length | Type | Use | Notes |
+|---|---|---|---|---|
+| 0x00 | 4B | Bytes | Header | Header, always `80 00 00 00`. |
+| 0x04 | 2B | Integer | Disaster | Type of disaster, as defined in the MISC section. |
+| 0x06 | 1B | Integer | Disaster X Location |  |
+| 0x07 | 1B | Integer | Disaster Y Location |  |
+| 0x08 | 2B | Integer | Time Limit (Months) |  |
+| 0x0A | 4B | Integer | City Size | Seems to be comparing against the normal city population without arcos from MISC. |
+| 0x0E | 4B | Integer | Residential Population |  |
+| 0x12 | 4B | Integer | Commercial Population  |  |
+| 0x16 | 4B | Integer | Industrial Population |  |
+| 0x1A | 4B | Integer | Cash Goal | Seems to be total cash on hand, not counting debts from bonds. |
+| 0x1E | 4B | Integer | Land Value Goal | Total city land value should be above this. |
+| 0x22 | 4B | Integer | Pollution Limit | Pollution should be below this limit. |
+| 0x26 | 4B | Integer | Crime Limit | Crime should be below this limit. |
+| 0x2A | 4B | Integer | Traffic Limit | Traffic should be below this limit. |
+| 0x2E | 1B | Integer | First Building | Building ID per [XBLD](#xbld) to be built to win. |
+| 0x2F | 1B | Integer | Second Building | As above, but a second goal. |
+| 0x30 | 2B | Integer | First Building Tile Count | Count of tiles that need to be built to win. Untested, but this means that building a single 4x4 building would require 16 tiles to be built to win. |
+| 0x32 | 2B | Integer | Second Building Tile Count | As above, but for second building goal. |
+| 0x34 | 4B | Null | Padding (Optional) | Sometimes there’s an extra 4 bytes of 0s at the end of the scenario as padding, but these don't seem appear in all scenarios. Potentially one version of the game needed a specific alignment. |
 
 ### PICT
 
 Image data for the scenario. All of the observed scenarios appear to be 65x65 pictures, with a 1px border on them, making the effective size actually 63x63.
 
-**Data Format**
+**Data Format:**
 
 | Offset | Length | Use |
 |---|---|---|
-| 0x00 | 4B | Header, seems to always be `0x80 0x00 0x00 0x00` |
+| 0x00 | 4B | Header, always `80 00 00 00` |
 | 0x04 | 2B | X size of image in pixels. |
 | 0x06 | 2B | Y size of image in pixels. |
 | 0x08 | varies | Rows of image data. |
 
 Each row of image data is the Y dimension single pixel bytes, with and additional 0xFF denoting the end of a row. Additionally, the first and last row being all 0x01 and the first and last pixel of all other rows being 0x01. Colours chosen from an internal palette, likely PAL_MSTR.BMP as used for all other ingame graphics.
 
+### TMPL
 
+This only appears in the 5 scenarios originally shipped with the game.
+
+Each entry consists of a pascal style string, followed by a data type in a 4-character shortened format.
+
+It has no function in actual scenario usage, but lays out what the contents of the `SCEN` section contain, presumably so that people can make their own scenarios. It is unknown why later scenarios don't have this information. This information is identical to the [SCEN](#scen) section.
