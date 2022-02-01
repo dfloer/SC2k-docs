@@ -767,37 +767,43 @@ Store the underground part of a tile.\
 
 ## XTXT
 
-1B per tile. Stores the text overlay for that tile. Note that this overlay is used to store not just signs, but also whether or not a microsim is applied to that tile and neighbour connections. Values in quotes are a default found in all files, unless explicitly changes, and affect all buildings with that shared microsim.
+1B per tile. Stores the text overlay for that tile. Note that this overlay is used to store not just signs, but also whether or not a microsim is applied to that tile and neighbour connections.
 
-|Offset|Text|
-|---|---|
-| 0x00 | No sign |
-| 0x01 .. 0x32 | Index to [XLAB](#xlab) user defined sign. |
-| 0x33 | Unused |
-| 0x34 | "SimBus System" |
-| 0x35 | "SimRail System" |
-| 0x36 | "SimSubway" |
-| 0x37 | Wind Power |
-| 0x38 | Hydro Power |
-| 0x39 | "SimPark System" |
-| 0x3A | "Museum" |
-| 0x3B | "Library System" |
-| 0x3C | "Marina" |
-| 0x3D .. 0xC8 | 139 Microsim labels. See Notes 1 and 2 below. |
-| 0xC9 .. 0xF0 | 39 things treated like signs. Index to [XTHG](#xthg), probably. See Note 3 below. |
-| 0xF1 .. 0xF9 | Unknown, but seemingly unused. |
-| 0xFA | Neighbour connection |
-| 0xFB | Toxic Cloud |
-| 0xFC | Flood |
-| 0xFD | Rioters |
-| 0xFE | Rioters (mass riots, maybe?) |
-| 0xFF | Fire |
+The "Label?" column indicates if this is an index to the actual text in [XLAB](#xlab) or not.
 
-Note 1: Used for: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)
+|Offset|Use|Label?|
+|---|---|---|
+| 0x00 | No sign | No |
+| 0x01 .. 0x32 | 50 user defined sign. | Yes |
+| 0x33 | Unused | N/A |
+| 0x34 | Bus | Yes |
+| 0x35 | Rail | Yes |
+| 0x36 | Subway | Yes |
+| 0x37 | Wind Power | Yes |
+| 0x38 | Hydro Power | Yes |
+| 0x39 | Parks | Yes |
+| 0x3A | Museum | Yes |
+| 0x3B | Library | Yes |
+| 0x3C | Marina | Yes |
+| 0x3D .. 0xC8 | 139 Microsim labels. See Notes 1 and 2 below. | Yes |
+| 0xC9 .. 0xF0 | 39 things treated like signs. Index to [XTHG](#xthg), probably. See Note 3 below. | No |
+| 0xF1 .. 0xF9 | Unknown, but seemingly unused. | N/A |
+| 0xFA | Neighbour connection | No |
+| 0xFB | Toxic Cloud | No |
+| 0xFC | Flood | No |
+| 0xFD | Rioters | No |
+| 0xFE | Rioters (mass riots, maybe?) | No |
+| 0xFF | Fire | No |
 
-Note 2: There only appear to be 139 labels here, even if there are 140 user facing microsims. It is unknown what causes this discrepency.
+For `0xFA`, this means that the tile is a neighbour connection, and should have an auto-generated sign on it. These sign values are not user changeable and do not count against the user sign limit of 50.
 
-Note 3: Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 39 total positions, 33 fire/police/military total. If there are lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\
+For `0xFB` and up, these indicate that the tile has the specified disaster tile on it.
+
+**Note 1:** Used for: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)
+
+**Note 2:** There only appear to be 139 labels here, even if there are 140 user facing microsims. It is unknown what causes this discrepency.
+
+**Note 3:** Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 39 total positions, 33 fire/police/military total. If there are lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\
 The tornado, monster, crashing airplane as well. Explosions might also appear in here, but may not be saved in the city file.
 
 ## XLAB
@@ -812,20 +818,22 @@ Each entry is a fixed 25 bytes. The first byte is the length of the ASCII data, 
 
 ### Label Indices
 
+Values in quotes are the default in the city file, and they apply to all buildings sharing that microsim. They also apply to all microsims if they are explicitly changed.
+
 |Offset|Label Use|
 |---|---|
 | 0x00 | Mayor's Name |
 | 0x01 .. 0x32 | 50 User Defined Signs |
 | 0x33 | Unused label |
-| 0x34 | Bus |
-| 0x35 | Rail |
-| 0x36 | Subway |
+| 0x34 | "SimBus System" |
+| 0x35 | "SimRail System" |
+| 0x36 | "SimSubway" |
 | 0x37 | Wind Power |
 | 0x38 | Hydro Power |
-| 0x39 | Parks |
-| 0x3A | Museum |
-| 0x3B | Library |
-| 0x3C | Marina |
+| 0x39 | "SimPark System" |
+| 0x3A | "Museum" |
+| 0x3B | "Library System" |
+| 0x3C | "Marina" |
 | 0x3D .. 0xC8 | 139 [Microsim](#xmic) labels. See Note 2 in [XTXT](#xtxt) section. |
 | 0xC9 .. 0xF9 | 48 unused labels |
 | 0xFA | Text for the last connection sign, if it exists. |
