@@ -767,41 +767,42 @@ Store the underground part of a tile.\
 
 ## XTXT
 
-1B per tile. Stores the text overlay for that tile. Note that this overlay is used to store not just signs, but also whether or not a microsim is applied to that tile and neighbour connections.
+1B per tile. Stores the text overlay for that tile. Note that this overlay is used to store not just signs, but also whether or not a microsim is applied to that tile and neighbour connections. Values in quotes are a default found in all files, unless explicitly changes, and affect all buildings with that shared microsim.
 
-00: No sign\
-01..32: pointer to [XLAB](#xlab) user defined sign.\
-33..3C: 10 microsim labels\
-33: unknown, not in 1114 cities I checked.\
-34: SimBus System\
-35: SimRail System\
-36: SimSubway\
-37: Wind Power\
-38: Hydro Power\
-39: SimPark System\
-3A: Museum\
-3B: Library System\
-3C: Marina\
-3D .. C8: 140 other microsim labels
+|Offset|Text|
+|---|---|
+| 0x00 | No sign |
+| 0x01 .. 0x32 | Index to [XLAB](#xlab) user defined sign. |
+| 0x33 | Unused |
+| 0x34 | "SimBus System" |
+| 0x35 | "SimRail System" |
+| 0x36 | "SimSubway" |
+| 0x37 | Wind Power |
+| 0x38 | Hydro Power |
+| 0x39 | "SimPark System" |
+| 0x3A | "Museum" |
+| 0x3B | "Library System" |
+| 0x3C | "Marina" |
+| 0x3D .. 0xC8 | 139 Microsim labels. See Notes 1 and 2 below. |
+| 0xC9 .. 0xF0 | 39 things treated like signs. Index to [XTHG](#xthg), probably. See Note 3 below. |
+| 0xF1 .. 0xF9 | Unknown, but seemingly unused. |
+| 0xFA | Neighbour connection |
+| 0xFB | Toxic Cloud |
+| 0xFC | Flood |
+| 0xFD | Rioters |
+| 0xFE | Rioters (mass riots, maybe?) |
+| 0xFF | Fire |
 
-For: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)
+Note 1: Used for: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)
 
-C9 .. F0: Things treated like signs. Index to XTHG, probably.
+Note 2: There only appear to be 139 labels here, even if there are 140 user facing microsims. It is unknown what causes this discrepency.
 
-_Notes:_ Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 40 total positions, 33 fire/police/military total. If you have a lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\
+Note 3: Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 39 total positions, 33 fire/police/military total. If there are lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\
 The tornado, monster, crashing airplane as well. Explosions might also appear in here, but may not be saved in the city file.
-
-F1 .. F9: unknown, not in multiple cities checked.\
-FA: Neighbour connection\
-FB: toxic cloud\
-FC: flood\
-FD: rioters\
-FE: rioters\
-FF: fire
 
 ## XLAB
 
-Labels pointed to by the pointers from [XTXT](#xtxt). 256 total entries.
+Labels pointed to by the pointers from [XTXT](#xtxt), except for cases like the disasters, which don't have a text label. 256 total entries.
 
 Labels aren't just signs, but also things like the names for microsims that can have names given to them.
 
@@ -811,13 +812,11 @@ Each entry is a fixed 25 bytes. The first byte is the length of the ASCII data, 
 
 ### Label Indices
 
-Label structure uses similar offsets as in XTXT.
-
 |Offset|Label Use|
 |---|---|
 | 0x00 | Mayor's Name |
 | 0x01 .. 0x32 | 50 User Defined Signs |
-| 0x33 | Unknown |
+| 0x33 | Unused label |
 | 0x34 | Bus |
 | 0x35 | Rail |
 | 0x36 | Subway |
@@ -827,31 +826,34 @@ Label structure uses similar offsets as in XTXT.
 | 0x3A | Museum |
 | 0x3B | Library |
 | 0x3C | Marina |
-| 0x3D | Stadium |
-| 0x3E .. 0xCA | 140 Microsim labels |
-| 0xCB .. 0xFA | 47 Unknown labels |
+| 0x3D .. 0xC8 | 139 [Microsim](#xmic) labels. See Note 2 in [XTXT](#xtxt) section. |
+| 0xC9 .. 0xF9 | 48 unused labels |
+| 0xFA | Text for the last connection sign, if it exists. |
 | 0xFB | Sports team: Football |
 | 0xFC | Sports team: Baseball |
 | 0xFD | Sports team: Soccer |
 | 0xFE | Sports team: Cricket |
 | 0xFF | Sports team: Rugby |
 
+Note: Sometimes the unused labels contain garbage data. This can be safely ignored.
+
 ## XMIC
 
 150 x 8B microsims\
 Probably the first 10 are for the built in microsims, and the next 140 for the rest.
 
+Given there only appear to be 139 microsims pointed to by XLAB, there could be only 139 here as well. More testing is needed to confirm this number.
+
 8B contents:\
 00: Index to building type\
 01..07: data (varies by building).
 
-	Example: "EC 00 00 18 00 60 0C B3"
-	Bus Line, stats 24 (0x0018), 96 (0x0060), 3251 (0x0cb3)
-	For a mayor’s mansion: F3 28 08 4A 00 5E 00 00
-	F3 = mansion, 28 = 4th stat, 08 4A = 2nd stat, 00=(maybe third stat), 5e = first stat, 00 00 could be padding or employees.
-	Llama Dome example: FF 8B 07 C1 01 07 00 80
-	8B=first stat, 07C1=2nd, 0107=3rd, 00=?, 80=4th, but 5th in game (# of weddings) is 139 (0x8B)
-
+    Example: "EC 00 00 18 00 60 0C B3"
+    Bus Line, stats 24 (0x0018), 96 (0x0060), 3251 (0x0cb3)
+    For a mayor’s mansion: F3 28 08 4A 00 5E 00 00
+    F3 = mansion, 28 = 4th stat, 08 4A = 2nd stat, 00=(maybe third stat), 5e = first stat, 00 00 could be padding or employees.
+    Llama Dome example: FF 8B 07 C1 01 07 00 80
+    8B=first stat, 07C1=2nd, 0107=3rd, 00=?, 80=4th, but 5th in game (# of weddings) is 139 (0x8B)
 
 ## XTHG
 
