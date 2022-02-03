@@ -1065,7 +1065,11 @@ Image data for the scenario. All of the observed scenarios appear to be 65x65 pi
 | 0x06 | 2B | Y size of image in pixels. |
 | 0x08 | varies | Rows of image data. |
 
-Each row of image data is the Y dimension single pixel bytes, with and additional 0xFF denoting the end of a row. Additionally, the first and last row being all 0x01 and the first and last pixel of all other rows being 0x01. Colours chosen from an internal palette, likely PAL_MSTR.BMP as used for all other ingame graphics.
+Each row of image data is the Y dimension single pixel bytes, with an additional `0xFF` denoting the end of a row. Additionally, the first and last row being all `0x01` and the first and last pixel of all other rows being `0x01`.
+
+The pixel bytes are colours chosen from an internal palette, likely PAL_MSTR.BMP as used for all other ingame graphics. There seems to be a +16 offset from the indexes used to render the tile sprites.
+
+Note: The game does not appear to actually care if the "border" values are `0x01` as `0x00` has been observed to work as well. It also doesn't appear to require the `0xFF` byte at the end of a row of pixels, instead seeming to use the X/Y dimensions specified in the header.
 
 ### TMPL
 
