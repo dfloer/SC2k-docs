@@ -1067,9 +1067,22 @@ Image data for the scenario. All of the observed scenarios appear to be 65x65 pi
 
 Each row of image data is the Y dimension single pixel bytes, with an additional `0xFF` denoting the end of a row. Additionally, the first and last row being all `0x01` and the first and last pixel of all other rows being `0x01`.
 
-The pixel bytes are colours chosen from an internal palette, likely PAL_MSTR.BMP as used for all other ingame graphics. There seems to be a +16 offset from the indexes used to render the tile sprites.
+The pixel bytes are colours chosen from an internal palette, seemingly based on `PAL_MSTR.BMP` as used for all other ingame graphics. There seems to be a -16 offset from the indices used to render the tile sprites.
 
-Note: The game does not appear to actually care if the "border" values are `0x01` as `0x00` has been observed to work as well. It also doesn't appear to require the `0xFF` byte at the end of a row of pixels, instead seeming to use the X/Y dimensions specified in the header.
+Not all values in the `PAL_MSTR.BMP` are actually valid values, with the observed range being from 18 to 169 inclusive. Additionally, values in the range 160 to 170 (in `PAL_MSTR`) appear to be remapped to indices 0 to 10. Note that 170 is where the first colour cycling value appears in `PAL_MSTR.BMP`.
+
+There are also two special case remapping between the `PAL_MSTR.BMP` and the PICT palette index:
+
+- (0, 0, 0): 0
+- (127, 127, 127): 254
+
+Note: The game does not appear to actually care if the "border" values are `0x01` as `0x00` has been observed to work as well. It also doesn't appear to require the `0xFF` byte at the end of a row of pixels, instead seeming to use the X/Y dimensions specified in the header to determine pixel data. Only older scenarios seem to use the explicit border and row end values, with newer ones using all `0x00`.
+
+Note 2: Some images appear to have full black (0, 0, 0) in them, but enumeration of the palette did not produce the black pixels, and it is presently unclear how this works.
+
+This image shows the colours produced for each value between 0 and 255 (inclusive). For any value without a colour mapping, the game renders it as either (127, 127, 17) or (159, 159, 159). It is unclear why or how it chooses differently between the two. As noted previously 254 seems to be the "real" index for the mid-gray, but it's unclear which is the "real" for the 159 gray.
+
+![PICT image index to palette mapping.](images/pict_palette.png)
 
 ### TMPL
 
@@ -1077,4 +1090,4 @@ This only appears in the 5 scenarios originally shipped with the game.
 
 Each entry consists of a pascal style string, followed by a data type in a 4-character shortened format.
 
-It has no function in actual scenario usage, but lays out what the contents of the `SCEN` section contain, presumably so that people can make their own scenarios. It is unknown why later scenarios don't have this information. This information is identical to the [SCEN](#scen) section.
+It has no function in actual game usage, but lays out what the contents of the `SCEN` section contain, presumably so that people can make their own scenarios. It is unknown why later scenarios omit this information. This information is identical to the [SCEN](#scen) section of this documentation.
