@@ -144,7 +144,7 @@ Miscellaneous city data, 4B/32b integers:
 | 0EC8 .. 0EFC | Newspaper List | Unknown exactly, 9x6B structure.|
 | 0FA0 | Ordinances flags | Bit flags for which of the 20 ordinances are enacted. 00000000:none, 000fffff:20. First ordinances (finance) section are rightmost bits. |
 | 0FA4 | unemployed | Unknown |
-| 0FA8 .. 0FE4 | Military Count | Unsure, but it may be a 16x2B count of military tiles.
+| 0FA8 .. 0FE4 | Military Count | 16x2B count of military tiles. See [Military Tile Count](#military-tile-count-details) section. |
 | 0FE8 | Subway Count | Unknown |
 | 0FEC | Speed | Speed setting: 1=paused, 2=Turtle, 3=Llama, 4=Cheetah, 5=African Swallow |
 | 0FF0 | Auto Budget | Auto budget setting. |
@@ -357,7 +357,29 @@ _Note:_ Bus stations have no funding setting in the game and therefore aren't st
 | 0x0D64 | transit funding rate, Subway |
 | 0x0DD0 | transit funding rate, Tunnel |
 
+#### Military Tile Count Details
+
+| Index | Tile ID | Tile Name |
+|---|---|---|
+| 0 | None | Unknown. Total count of military tiles? |
+| 1 | 0xDD | Straight Runway |
+| 2 | 0xDE | Cross Runway |
+| 3 | 0xEF | Military Parking Lot |
+| 4 | 0xF2 | Cargo Yard |
+| 5 | 0xEA | Radar |
+| 6 | 0xE3 | Warehouse |
+| 7 | 0xE4 | Airport Building 1 |
+| 8 | 0xE5 | Airport Building 2 |
+| 9 | 0xF1 | Top Secret |
+| 10 | 0xE0 | Crane |
+| 11 | 0xE2 | Military Control Tower |
+| 12 | 0xE7 | F-15B |
+| 13 | 0xE8 | Small Hangar |
+| 14 | 0xE8 | Large Hangar |
+| 15 | 0xF9 | Missile Silo |
+
 ## ALTM
+
 Altitude map of the city. Stores the altitude of a tile.
 
 2 bytes per tile, stored as a 16 bit integer:\
@@ -685,8 +707,8 @@ DB: Statue
 
 **Infrastructure (not power plants):**\
 DC: Water Pump\
-DE: Runway intersection\
 DD: runway (straight)\
+DE: Runway intersection\
 DF: Pier (Game appears to rotate the pier based on the direction the crane is facing.)\
 E0: Crane\
 E1: Control Tower (Civilian Control Tower)\
