@@ -1,4 +1,4 @@
-#Archive File Specification
+# Archive File Specification
 Specification on how asset files are stored inside of an archive. Include TIL, URK and some DAT files, as used in the DOS version.
 ## Archive Format
 There are several different archive files that all have the same format.\
