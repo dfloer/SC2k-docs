@@ -5,7 +5,7 @@
 The basic file structure is of an EA IFF file: \
 It starts with a 12B (byte) header which contains:
 - First 4B is the IFF type, for .sc2 files this is FORM.
-- Next 4B is the length of the file (not counting the first 12B)
+- Next 4B is the length of the file (not counting the first 8B)
 - Last 4B is a container for the rest of the file, for .sc2 files this is SCDH.
 
 ## Other file notes
@@ -88,7 +88,7 @@ Miscellaneous city data, 4B/32b integers:
 |0010 | City Age | days since city was founded in 300 day years, and 25 day months? example: date=2435, founded= 2050, (2435-2050)=385. month=July=07, so 385(300)+7*25=115,650. In save file: 115,663, so probably a few day into July.|
 |0014 | Money | Stored as signed 32b int |
 |0018 | Number of bonds. |
-|001C |  Game Level | This seems related to the difficulty the game was started with.|
+|001C |  Game Level | Game difficulty. 0 = None (Map), 1 = Easy, 2 = Medium, 3 = Hard. |
 |0020 |  City Status | Reward tier obtained. 0 = None, 1 = Mayor's Mansion, 2 = City Hall, 3 = Statue, 4 = Military, 5 = Llama Dome, 6 = Arcos. |
 |0024 | City Value | Unknown exactly, stores something to do with total city value.|
 |0028 | Land Value | Sum of all the values in XVAL. |
