@@ -383,10 +383,9 @@ _Note:_ Bus stations have no funding setting in the game and therefore aren't st
 Altitude map of the city. Stores the altitude of a tile.
 
 2 bytes per tile, stored as a 16 bit integer:\
-Bits 0 to 7: This may be related to tunnel levels. _Needs further investigation._\
-Bit 8: Tile covered in water.\
-Bits 9 and 10: unknown exactly, but seems to have something to do with water level due to raising or lowering the ocean in terrain edit mode. Doesn’t appear to affect the simulation. \
-Bits 11 to 15: 5 bit altitude (32 levels)
+Bits 0 to 5: This may be related to tunnel levels. _Needs further investigation._\
+Bits 6 to 10: 5 bit water level height (32 levels) \
+Bits 11 to 15: 5 bit land altitude - for underwater tiles, this is the sea floor (32 levels)
 
 ## XTER
 
