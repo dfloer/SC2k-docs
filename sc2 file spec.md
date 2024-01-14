@@ -5,7 +5,7 @@
 The basic file structure is of an EA IFF file: \
 It starts with a 12B (byte) header which contains:
 - First 4B is the IFF type, for .sc2 files this is FORM.
-- Next 4B is the length of the file (not counting the first 12B)
+- Next 4B is the length of the file (not counting the first 8B)
 - Last 4B is a container for the rest of the file, for .sc2 files this is SCDH.
 
 ## Other file notes
@@ -14,7 +14,7 @@ For anything on a grid in the save (most segments), the grid goes from top corne
 This is an unofficial specification, and is therefore incomplete. However, large sections are complete. This specification also only applies to the .sc2 file format, and not how the game interprets the given values.
 
 Complete sections:\
-CNAM, XTER, XBLD, XZON, XUND, XBIT, XBIT, XTRF, XPLT, XVAL, XCRM, XPLC, XFIR, XPOP, XROG, XGRP, TEXT
+CNAM, XTER, XBLD, XZON, XUND, XBIT, XTRF, XPLT, XVAL, XCRM, XPLC, XFIR, XPOP, XROG, XGRP, TEXT
 
 Mostly complete sections:\
 MISC, XTXT, XLAB, XMIC, SCEN
@@ -88,7 +88,7 @@ Miscellaneous city data, 4B/32b integers:
 |0010 | City Age | days since city was founded in 300 day years, and 25 day months? example: date=2435, founded= 2050, (2435-2050)=385. month=July=07, so 385(300)+7*25=115,650. In save file: 115,663, so probably a few day into July.|
 |0014 | Money | Stored as signed 32b int |
 |0018 | Number of bonds. |
-|001C |  Game Level | This seems related to the difficulty the game was started with.|
+|001C |  Game Level | Game difficulty. 0 = None (Map), 1 = Easy, 2 = Medium, 3 = Hard. |
 |0020 |  City Status | Reward tier obtained. 0 = None, 1 = Mayor's Mansion, 2 = City Hall, 3 = Statue, 4 = Military, 5 = Llama Dome, 6 = Arcos. |
 |0024 | City Value | Unknown exactly, stores something to do with total city value.|
 |0028 | Land Value | Sum of all the values in XVAL. |
@@ -114,7 +114,7 @@ Miscellaneous city data, 4B/32b integers:
 |0078 | Rewards availability | (0s)11111= all 5, 00001=mayor’s only, 10000=arcos only, etc.|
 |007C .. 0168 | Population/Health/Education Graph Data| 20 values each, interleaved in that order.|
 |016C .. 01EC | Industry Graph Data | 33x4B. Each appears to be for the industry window. There are 3 different graphs, each of which appears to show be stored as ratios, tax rate, demand. _Ranges on values unknown._|
-|01F0 .. 05EC | Building Counts | Same index as XBLD, count of that # of building in the city.|
+|01F0 .. 05EC | Building Tile Counts | Same index as XBLD, count of that # of building tiles in the city.|
 |05F0 | Populated Tile Count | Total number of populated tiles.|
 |05F4 | ? | Unknown, but seems like it'd be the other part of Populated Tile count |
 |05F8 | Residential Tile Count | |
@@ -126,7 +126,7 @@ Miscellaneous city data, 4B/32b integers:
 |0610 .. 06D7 | Bond Data | bonds, maximum of 50, signed 32b int. Famous overflow in game. |
 |06D8 .. 0718 | Neighbour Data | 4x4B of neighbour information. Form is: neighbour index, neighbour population, neighbour value (unknown what exactly this is) and neighbour fame (again unknown). Ordering is: lower left, upper left,  unknown,  upper right,  bottom right.|
 |0710 | Unknown | Seems to be 0 in an established city (full RCI), +’ve in others. Unknown exactly.|
-|0718 .. 0720 | RCI demand | Signed 32b int from -1999 to +2000. First R, second C, third I.|
+|0718 .. 0720 | RCI demand | Signed 32b int from -2000 to +2000. First R, second C, third I.|
 |0738 .. 0778 | Technology Discovery Years | Contains the year the technology was discovered. Appears to be 0 if the city was saved after the technology was invented. Details in [Technology Discovery Years Table](#technology-discovery-years)|
 |077C .. 08BF | Property taxes | Each takes 27*4B. See [Tax Rate Table](#budget-tax-rate-details) |
 | 077C | residential tax rate | Residential zoned building tax rate, between 0 and 20. |
