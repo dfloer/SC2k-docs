@@ -127,11 +127,11 @@ Notes:
 
 `@` also `@0xa4` seems to be a foreign last name. Just link `[0xa4`.
 
-`*` seems to behave slightly differently. With the previous escape characters, when a value is selected the same value will be used throughout the article. For instance, every instance of `[0xB0` will map to the same last name. However, `*0xB0` will pick a random last name for each occurrence in the article. If the `*` is in a headline, the occurences in the body should match. This is not the case in the DOS version.
+`*` seems to behave slightly differently. With the previous escape characters, when a value is selected the same value will be used throughout the article. For instance, every instance of `[0xB0` will map to the same last name. However, `*0xB0` will pick a random last name for each occurrence in the article. If the `*` is in a headline, the occurrences in the body should match. This is not the case in the DOS version.
 
 #### Numbers
 
-`%x` is some number. X seems to be the maximum the number will be. Multiple numbers can be stacked together, for example in the time templates: `%12:%5%9 am` and `%12:%5%9 pm`. The number can contain a 1000s seperator, like `%250,000`. The minimum appears to be 1.
+`%x` is some number. X seems to be the maximum the number will be. Multiple numbers can be stacked together, for example in the time templates: `%12:%5%9 am` and `%12:%5%9 pm`. The number can contain a 1000s separator, like `%250,000`. The minimum appears to be 1.
 
 There appears to be a bug in the Windows 95 version affecting number generation. The Mac and DOS versions correctly generate number in the right range. This may be due to running the game on modern Windows versions, perhaps the random function changed.
 

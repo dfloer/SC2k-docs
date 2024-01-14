@@ -822,7 +822,7 @@ For `0xFB` and up, these indicate that the tile has the specified disaster tile 
 
 **Note 1:** Used for: police, fire, hospitals, schools, stadiums, zoos, prisons, colleges, power plants, water treatment, desalination, mayor’s house, city hall, llama dome, statue, arcos. (Anything that when you click on it, you can change it’s name that isn’t included above.)
 
-**Note 2:** There only appear to be 139 labels here, even if there are 140 user facing microsims. It is unknown what causes this discrepency.
+**Note 2:** There only appear to be 139 labels here, even if there are 140 user facing microsims. It is unknown what causes this discrepancy.
 
 **Note 3:** Various police/fire/military emergency deploys here, sailboats/nessie, helicopters, maxis man, ships, planes, trains (each train car counts as one). 39 total positions, 33 fire/police/military total. If there are lots of trains and other stuff on the map, this will limit the number of emergency deploys, for example.\
 The tornado, monster, crashing airplane as well. Explosions might also appear in here, but may not be saved in the city file.
@@ -942,7 +942,7 @@ Basic structure for a chunk seems to be:
 
 |Bit Position | Flag Meaning|
 |---|---|
-| 0 | Powerable (Does this tile recieve power).|
+| 0 | Powerable (Does this tile receive power).|
 | 1 | Powered (Is this tile receiving power).|
 | 2 | Piped (Can this tile receive water).|
 | 3 | Watered (Is this tile receiving water).|
