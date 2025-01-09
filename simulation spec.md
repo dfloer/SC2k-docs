@@ -7,6 +7,7 @@ At this point, these specifications are largely structured as notes rather an im
 ### Starting a New City:
 
 The simulation is initialized with several values:
+
 - The start date to national population mapping is:
   - 1900 : 10,000.
   - 1950 : 25,000.
@@ -19,11 +20,11 @@ The simulation is initialized with several values:
   1. starting funds: $20,000.
   2. starting funds: $10,000.
   3. starting funds: $10,000. This is a bond at 3% interest.
-- Invention dates are calculated from the base year they can be [invented](https://github.com/dfloer/SC2k-docs/blob/master/sc2%20file%20spec.md#technology-discovery-years) with an additional 0 to 19 years randomly added.
+- Invention dates are calculated from the base year they can be [invented](sc2%20file%20spec.md#technology-discovery-years) with an additional 0 to 19 years randomly added.
 
-### Terrain Generation:
+### Terrain Generation
 
-#### Terrain Generation settings:
+#### Terrain Generation settings
 
 | Name | Range | Default |
 | --- | --- | --- |
@@ -35,11 +36,11 @@ The simulation is initialized with several values:
 
 Selecting Coast also allow salt-water to be placed on the map.
 
-### Power Plants:
+### Power Plants
 
 Methodology to determine: determined by building a city with low density zones and calculating how many tiles each power plant could power. Note that these numbers include the power plant, as it seems to require power to operate.
 
-|Plant|Nominal Output (MW)|Actual Output (tiles)|Efficiency|
+| Plant | Nominal Output (MW) | Actual Output (tiles) | Efficiency |
 |---|---|---|---|
 | Coal | 200 | 704 | 44 |
 | Hydroelectric | 20 | 40 | 40 |
@@ -51,7 +52,7 @@ Methodology to determine: determined by building a city with low density zones a
 
 Efficiency is simply the number of tiles a plant can power / the number of tiles the plant takes up. So for the Coal plant this is 704 / 16 = 44. This is not part of the simulation, just included for illustrative purposes.
 
-##### Wind Power:
+#### Wind Power
 
 Methodology to determine: A city was made with all 32 terrain levels to determine how elevation affects output.
 
@@ -92,36 +93,67 @@ The power output of a wind turbine is: `altitude // 2 + [0, 3]` where the 0-3 se
 | 30 | 3050 | 15 | 18 |
 | 31 | 3150 | 15 | 18 |
 
+#### Solar Power
 
-##### Solar Power:
 Nominal base output is ~136 (8 powered tiles/solar tile). Formula appears to be:\
 `(Random % (100 - humid) // 10) + 5` where % is the mod operator.
 
 Inspection of a game showed that the minimum output was 0, the maximum output was 190 and the average was 136.
 
-### Disasters:
+### Disasters
 
+Disasters won't start too early in the game, dependend on the game's difficulty (this might be incorrect):
 
-### Game Models:
-#### Crime Model:
+- On easy, no disaster for the first three months
+- On medium, no disasters for the first two months
+- On hard, no disaster for the first month.
+
+#### Disaster start conditions
+
+Most disasters have a random start component
+
+- Hurricane:
+  - Weather has to be `0x0A` (Hurricane).
+  - Has to have coastal terrain (from map generation).
+- Tornado:
+  - Weather has to be `0x0B` (Tornado).
+- Riot:
+  - Unemployment is 10 or more.
+  - Heat is over 170.
+  - Population is over 30,000 (without arcos).
+- Meltdown:
+  - Nuclear power plant needs to exist.
+- Microwave:
+  - Microsave power plant needs to exist.
+- Air Crash:
+  - There have to be runway tiles.
+
+### Game Models
+
+#### Crime Model
+
 Total amount of crime is stored in MISC as Crime Count. This is the sum of all values in XCRM.\
 For purposes of display in the graph windows, 1 point in the window is 3750 points of crime, rounded up.
 
 The value stored in "Arrests" in MISC is the total number of arrests for each police station microsim.
-#### Land Value Model:
-Total land value is stored in MISC as Land Value. This is the sum of all the values in XVAL. For display in the bond window, the displayed value is city value * 1000. For the graph display, 1 point in the window is 3200 points of value, rounded up to the nearest whole number. \
-City value seems to be land value / 2.
 
-#### Traffic Model:
+#### Land Value Model
+
+Total land value is stored in MISC as Land Value. This is the sum of all the values in XVAL. For display in the bond window, the displayed value is `city value * 1000`. For the graph display, 1 point in the window is 3200 points of value, rounded up to the nearest whole number. \
+City value seems to be `land value / 2`.
+
+#### Traffic Model
+
 Total traffic is stored in MISC as Traffic Count. It does not appear to be the sum of all the values in XTRF.
 
-#### Weather:
-The game tracks four different variables relating to weather:\
+#### Weather
 
-- Heat (temperature?)
-- Wind: range 0-255.
-- Humidity
-- The actual weather. [Weather types](https://github.com/dfloer/SC2k-docs/blob/master/sc2%20file%20spec.md#weather-type)
+The game tracks four different variables relating to weather:
+
+- Heat (temperature). In the newspaper, this degrees F, minus 100. So 186 in game is 86°F in the newspaper
+- Wind: range 0-255. This appears to nominally be in miles per hour.
+- Humidity: Appears to be rain, newspaper shows this as mm (not inches?) of rain.
+- The actual weather. [Weather types](sc2%20file%20spec.md#weather-type)
 
 Reportedly, crime and the weather are linked, and weather can effect disasters as well.
 
@@ -146,6 +178,16 @@ The buildings that cause NIMBY reactions are:
 
 Churches appear every 5000 people, without arcos.
 
+##### Citizen Demands
+
+Citizens demand services at certain points. Unless otherwise noted, population counts are without arcos.
+
+- Schools are every 20,000 sims.
+- Fire stations are every 20,000 sims.
+- Hospitals are every 25,000 sims.
+- More water capacity is needed if utilization reaches 98%.
+- More power capacity is needed if utilization reaches 98%.
+
 Cheats:
 
 - `joke`
@@ -157,4 +199,3 @@ Cheats:
 - `fund`
 - `newhouse`
   - The above cheat doesn't work, because when 'n' is typed, the game starts looking for noah, and never reaches this.
-
