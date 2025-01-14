@@ -4,7 +4,7 @@
 
 At this point, these specifications are largely structured as notes rather an implementable specification due to the very incomplete nature of them. Written for the Windows 95 Special Edition version.
 
-### Starting a New City:
+### Starting a New City
 
 The simulation is initialized with several values:
 
@@ -36,6 +36,50 @@ The simulation is initialized with several values:
 
 Selecting Coast also allow salt-water to be placed on the map.
 
+### Water Production
+
+Water production is measured in the number of tiles it will serve, not the gallons displayed in game.
+
+There's a display bug where a single water pump in a city with no consumer makes the water shortage check fail, this does not mean that the city doesn't need water. This has been called the "Phantom Water Pump Trick", but it's not useful to **actually** get rid of the need for a water system.
+
+#### Water Pumps
+
+Water pump production is base on the sea level, how many fresh water tiles are bordering it (8 maximum) and how much precpitation is happening.
+
+The formula the game uses appears to be: `sea level * 5 + fresh water tiles * 10 + precipitation / 2`
+
+To convert to gallons of water, round this value down and multiply by 720.
+
+Example from a city with a sea-level of 4, 4 fresh water tiles around the pump and 14mm of rain: \
+4 * 5 + 4 + 10 + 14 / 2 = 67.0\
+Game shows 48,240 gallons/month (=67 * 720).
+
+#### Desalinization
+
+The formula appears to be `salt water tiles * 20`.
+
+Note that as multi-tile buildings are calculated for each tile in a building, this means each tile needs to be calculated independently and summed up.
+
+This means that a desalinization plant surrounded on all sides by salt water will produce 640 files worth of water.
+
+How is this calculated?
+
+There are 9 tiles of the desalinization plant. 4 tiles border 3 saltwater tiles (the middle outside tiles), and 4 tiles border 5 saltwater tiles (the corner tiles), with one tile (the inside middle tile) bordering no saltwater tiles. This gives us `4 * 5 + 4 * 3 + 1 * 0 = 32` tiles. Which, multiplied by 20 = 640.
+
+Another example, with a power line going to the plant in the middle of one side. We have one less saltwater tile, so the calculation is now based on: 2 tiles of 5 (the two outside corners away from the power line), 3 tiles of 3 (the three edges without the power line), 2 tiles of 4 (the two corners near the power line), and finally one tile with two bordering salt water tiles (the tile the power line lands on): This gives `2 * 5 + 3 * 3 + 2 * 4 + 1 * 2 = 29`, and the game shows 580 tiles of water produced (29 * 20 is 580).
+
+Note that the internal game calculation goes a tile at a time, but I grouped tiles together for illustrative purposes.
+
+#### Water Towers
+
+Unknown exactly, but water towers appear to store a maximum of 400 tiles of water, in 100 tile increments. Water towers only store excess production from pumps, and "discharge" water only when production is lower than demand.
+
+#### Water Treatment Plants
+
+There's a bonus for having enough water treatment plants.
+
+One water treatment plant is needed for every 2,000 tiles in a city.
+
 ### Power Plants
 
 Methodology to determine: determined by building a city with low density zones and calculating how many tiles each power plant could power. Note that these numbers include the power plant, as it seems to require power to operate.
@@ -51,6 +95,8 @@ Methodology to determine: determined by building a city with low density zones a
 | Fusion | 2500 | 8880 | 555 |
 
 Efficiency is simply the number of tiles a plant can power / the number of tiles the plant takes up. So for the Coal plant this is 704 / 16 = 44. This is not part of the simulation, just included for illustrative purposes.
+
+The energy saving ordinance appears to save 1/12 (~8.33%) power.
 
 #### Wind Power
 
@@ -157,13 +203,54 @@ The game tracks four different variables relating to weather:
 
 Reportedly, crime and the weather are linked, and weather can effect disasters as well.
 
-#### In Game Windows
-
-##### Budget
+#### Budget
 
 For bonds, the game appears to display decimal rates rounded down in the budget window, but calculates costs based on the actual rate.
 
 The bond sum rate may be used to determine credit rating, in conjunction with the city's land value.
+
+##### Taxes
+
+Tax revenue is calculated as `tax rate * population / 75`. Land value does not appear to affect tax revenue, but reportedly it was _intended_ to affect tax revenue.
+
+Difficulty appears to change how sensitive sims are to taxes.
+
+##### Ordinances
+
+Ordinances appear to have effects on zone demand, taxes raised and other effects.
+
+Notes:
+
+- This is still incomplete, and ?'s are used in place of unknown values.
+- ?? means unknown if effect exists.
+- Cost is given of that % of tax revenue it costs.
+- Demands changes were determined experimentally.
+- Costs were estimated based on looking at the cost versus tax revenue.
+- LE/EQ boosts are unknown, but seem to exist.
+- Parking fines may not actually impact traffic.
+
+| Name | Demand Effect | Tax Effect | Other Effect(s) | Cost |
+| --- | --- | --- | --- | --- |
+| 1% Sales Tax | -1% Commercial | +1% Commercial Revenue | - | 0% |
+| 1% Income Tax | -1% Residential | +1% Residential Revenue | - | 0% |
+| Legalized Gambline | - | +2% Commercial Revenue | (?) crime increase | 0% |
+| Parking Fines | - | +0.5% Residential Revenue | (??) traffic change | 0% |
+| Pro-Reading Campaign | - | - | ?? Increased EQ | 1/6% Res |
+| Anti-Drug Campaign | - | - | ?? Increased LE | 1/5% Res |
+| CPR Training | - | - | ?? Increased LE | 1/6% Res |
+| Neighborhood Watch | - | - | - | 1/3% Res |
+| Energy Conservation | - | - | Power usage drops by 1/12 (~8.333%) | 1/2% All |
+| Nuclear Free Zone | - | - | No Nuclear Power plants can be built. | 0% |
+| Homeless Shelter | +1% Commercial | - | - | 0.5% Res |
+| Pollution Controls | -1% Industrial | - | Less pollution | 1% Ind |
+| Volunteer Fire Dept. | - | - | ?? Increased fire power. | 1/3% Res |
+| Public Smoking Ban | - | - | ?? Increased LE | 1/6% Res |
+| Free Clinics | - | - | ?? Increased LE | 1/2% Res |
+| Junior Sports | - | - | ?? Increased LE/EQ | 1/4% Res |
+| Tourist Advertising | +1% Commercial | - | - | 1% Comm |
+| Business Advertising | +1% Industrial | - | - | 1% Ind |
+| City Beautification | +1% Residential | - | - | 1/4% Res |
+| Annual Carnival | +1% Commercial | - | - | 1/3% Comm |
 
 #### Miscellaneous Notes
 
@@ -187,8 +274,18 @@ Citizens demand services at certain points. Unless otherwise noted, population c
 - Hospitals are every 25,000 sims.
 - More water capacity is needed if utilization reaches 98%.
 - More power capacity is needed if utilization reaches 98%.
+- Churches are automatically built every 2,500 sims, but only replace an existing 2x2 residential building.
+- Residential recreation demand only crops up after 10,000 population.
+  - A marina increases the residential demand cap by 9,000 total.
+  - A big park increases the residential demand cap by 3,000.
+  - Zoos and stadiums each increase the residential demand cap by 16,000.
+- Airport demand is every 10,000 commercial population (potentially only the runway cross counts).
+- A road connection satisfied 2,000 commercial population demand.
+- Seaport demand is every 10,000 industrial population (only the pier counts).
+- A rail connection also satisfies 10,000 industrial population.
+- A highway connection also satisfies 10,000 industrial population.
 
-Cheats:
+## Cheats
 
 - `joke`
 - `gilmartin`
