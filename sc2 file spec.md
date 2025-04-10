@@ -105,9 +105,9 @@ Miscellaneous city data, 4B/32b integers:
 |0054 |  National Value| Unknown |
 |0058 | National Tax | Unknown |
 |005C| National Trend | How is the sim nation economy doing? This affects interest rates. |
-|0060| Heat | Something weather related.|
-|0064 | Wind | Something weather related. |
-|0068 | Humid | Something weather related. |
+|0060| Heat | Temperature in F. In the newspaper, this degrees F, minus 100.)|
+|0064 | Wind | Wind speed. In miles/hour, as shown in newspaper. |
+|0068 | Humid | Seems to be rain amount. Measured in mm, as shown in newspaper. |
 |006C | Weather | Called weatherTrend by the game. See [Weather Type table](#weather-type).|
 |0070 | Disasters | See [Disaster Type table](#disaster-type).|
 |0074 | Residential population| Unknown exactly.|
@@ -873,9 +873,14 @@ Probably the first 10 are for the built in microsims, and the next 140 for the r
 
 Given there only appear to be 139 microsims pointed to by XLAB, there could be only 139 here as well. More testing is needed to confirm this number.
 
-8B contents:\
-00: Index to building type\
-01..07: data (varies by building).
+|Offset|Usage|
+|---|---|
+| 00 |  Index to building type. |
+| 01 | Single byte microsim value. |
+| 02 | Two byte microsim value. |
+| 04 | Two byte microsim value. |
+| 06 | Two byte microsim value. |
+
 
     Example: "EC 00 00 18 00 60 0C B3"
     Bus Line, stats 24 (0x0018), 96 (0x0060), 3251 (0x0cb3)
@@ -906,18 +911,18 @@ Basic structure for a chunk seems to be:
 
 |Offset|Usage|
 |---|---|
-| 00 | int representing the id of the tile |
-| 01 | unknown data, rotation?|
-| 02 | unknown data, rotation? (for id=9, this seems to turn the boat into nessie)|
+| 00 | int representing the id of the tile, given below |
+| 01 | Seems to be the tile rotation. |
+| 02 | Seems to be a modifier, for id=9, this seems to turn the boat into nessie |
 | 03 | tile x coordinate |
 | 04 | tile y coordinate |
-| 05 | unknown |
-| 06 | unknown |
-| 07 | unknown |
-| 08 | unknown |
-| 09 | unknown |
-| 0A | unknown |
-| 0B | unknown |
+| 05 | tile x height (how far above the ground is this, for plane/helicopter) |
+| 06 | "px", unknown |
+| 07 | "py", unknown |
+| 08 | "dx", unknown |
+| 09 | "dy", unknown |
+| 0A | "label", unknown |
+| 0B | "goal", unknown |
 
 **Observed tile ids:**\
 0x1: Airplane\
